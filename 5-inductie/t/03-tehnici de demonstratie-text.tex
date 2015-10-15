@@ -1,0 +1,290 @@
+%!TEX root = 03-tehnici de demonstratie.tex
+
+
+\begin{section}{Formalizare}
+\begin{frame}{Cum demonstrăm formal o proprietate?}
+\begin{block}{Evaluarea expresiilor aritmetice}
+Orice expresie aritmetică în IMP se evaluează folosind mașina SMC la un rezultat întreg
+\begin{itemize}
+\item depinzând (doar) de starea memoriei
+\item Într-un număr finit de pași
+\item Fără a modifica restul configurației
+\end{itemize}
+\end{block}
+
+\onslide<2>
+\only<beamer|handout>{
+\begin{theorem}
+Pentru orice expresie aritmetică $E$ în IMP și pentru  orice configurație $\c{c,r,s}$ a mașinii SMC în care $s$ e definită pentru toate locațiile lui $E$, există un număr întreg $n$ astfel încât 
+$$\c{E\cdot c,  r, s} \longrightarrow^\ast \c{c, n\cdot r, s}$$
+\end{theorem}}
+\end{frame}
+
+\begin{frame}{Inducție?}
+\begin{theorem}
+Pentru orice expresie aritmetică $E$ în IMP și pentru  orice configurație $\c{c,r,s}$ a mașinii SMC în care $s$ e definită pentru toate locațiile lui $E$, există un număr întreg $n$ astfel încât 
+$$\c{E\cdot c,  r, s} \longrightarrow^\ast \c{c, n\cdot r, s}$$
+\end{theorem}
+
+\begin{block}{Demonstrație (Ciornă)}
+Inducție după "structura" lui $E$
+\begin{itemize}
+\item Ce înseamnă structura lui $E$?
+\item Pot face inducție după ea?
+\end{itemize}
+\end{block}
+\end{frame}
+
+\end{section}
+
+\begin{section}{Sintaxă abstractă}
+\begin{frame}{Arbori de sintaxă}
+   \begin{block}{Parsare}
+      Program \hfill $\xrightarrow{\mbox{Parsare}}$ \hfill Arbore de derivare\\
+     $3 + ! x$ \hfill 
+\begin{minipage}{.52\columnwidth}
+\graph{
+  \Vertex[L={$E$},style={color=blue!75!black}]{E}
+  \SOWE[L={$E$},style={color=blue!75!black}](E){E1} 
+  \SOEA[L={$E$},style={color=blue!75!black}](E){E2} 
+  \SO[L={$\it iop$},style={color=blue!75!black}](E){Op} 
+  \SO[L={$n$},style={color=blue!75!black}](E1){n} 
+  \SO[L={$+$}](Op){P}
+  \SO[L={$!$}](E2){B} 
+  \SOEA[L={$l$},style={color=blue!75!black}](E2){L} 
+  \SO[L={$3$}](n){N3}
+   \SO[L={$x$}](L){x}
+  \Edge(E)(E1)
+   \Edge[label={$E$ ::= $E$ $\it iop$ $E$},labelstyle={right=2em,midway,inner sep=0pt,minimum size=0pt}](E)(E2)
+  \Edge(E)(Op)
+  \Edge[label={$E$ ::= $n$},labelstyle={left=1em,midway,inner sep=0pt,minimum size=0pt}](E1)(n)
+   \Edge(n)(N3)
+  \Edge(Op)(P)
+   \Edge(E2)(B)
+   \Edge[label={$E$ ::= ``!'' $l$},labelstyle={right=2em,midway,inner sep=0pt,minimum size=0pt}](E2)(L)
+   \Edge(L)(x)
+}\end{minipage}
+   \end{block}
+\onslide<2>
+\begin{block}{Arbore abstract de sintaxă (AST)}
+\vspace*{-2ex}\begin{minipage}{.59\columnwidth}
+\begin{itemize}
+\item Pune în evidența structura
+\item Ignoră detaliile „gramaticale“
+\item „iop“, „int“, „loc“ se numesc \structure{constructori}
+\end{itemize}
+\end{minipage}\hfill
+\begin{minipage}{.2\columnwidth}
+\vspace*{-1ex}
+\graph{
+  \Vertex[L={iop},style={color=blue!75!black}]{E}
+  \SOWE[L={int},style={color=blue!75!black}](E){E1} 
+  \SOEA[L={loc},style={color=blue!75!black}](E){E2} 
+  \SO[L={$+$}](E){Op} 
+  \SO[L={$3$}](E1){n} 
+  \SO[L={$x$}](E2){B} 
+  \Edge(E)(E1)
+   \Edge(E)(E2)
+  \Edge(E)(Op)
+  \Edge(E1)(n)
+   \Edge(E2)(B)
+}\end{minipage}
+\end{block}
+\end{frame}
+
+\begin{subsection}{Tip abstract de date}
+
+\begin{frame}[fragile]{\only<beamer|handout>{Tip abstract de date}}{Reprezentăm programele ca termeni algebrici}
+\begin{block}{Signatură algebrică (în Maude)}
+\begin{asciik}
+  sorts IExp BExp Cmd . 
+  op int : Int -> IExp .                   --- integer injection
+  op iop : Iop IExp IExp -> IExp .	        --- integer operation 
+  op loc : Loc -> IExp .                   --- location !
+  op bool : Bool -> BExp .                 --- boolean injection
+  op bop : Bop IExp IExp -> BExp .         --- integer operation 
+  op skip : -> Cmd .                       --- skip
+  op seq : Cmd Cmd -> Cmd .                --- seq composition ;
+  op asgn : Loc IExp -> Cmd .              --- assignment :=
+  op if : BExp Cmd Cmd -> Cmd .            --- conditional
+  op while : BExp Cmd -> Cmd .             --- while loop
+\end{asciik}
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Reprezentarea AST ca termen}
+\begin{block}{Program\hspace{8em} Termen AST}
+\begin{minipage}{.3\columnwidth}
+\begin{asciic}
+ x := 10 ;
+(sum := 0 ;
+ while (0 <= !x)  do 
+   (sum := !sum + !x ;
+    x := !x - 1
+   )
+ )
+\end{asciic}
+\end{minipage}\hfill
+\begin{minipage}{.64\columnwidth}
+\footnotesize
+\begin{verbatim}
+ seq(asgn(x,int(10)),
+ seq(asgn(sum,int(0)),
+     while(bop(<=, int(0), loc(x)),
+       seq(asgn(sum, iop(+, loc(sum), loc(x))),
+           asgn(x, iop(-, loc(x), int(1)))
+       ))
+ ))
+\end{verbatim}
+\end{minipage}
+\end{block}
+\begin{itemize}
+\item Pentru a ușura notația lucrăm cu reprezentarea sintactică (stânga)
+\item Folosim paranteze pentru dezambiguizare
+\item Asociem (mental) fiecărei fraze program termenul AST corespunzător
+\item Identificăm termenul AST cu arborele asociat
+\end{itemize}
+\end{frame}
+\end{subsection}
+\end{section}
+
+\begin{section}{Inducție matematică}
+\begin{frame}{Inducție slabă/incompletă}
+Pentru a demonstra că $P(n)$ este adevărată pentru orice număr natural $n$:
+\onslide<2>
+\begin{description}
+\item[Caz de bază] Demonstrăm că $P(0)$ e adevărată
+\item[Pas de inducție] Pentru orice număr natural $n$, demonstrăm că \\dacă $P(n)$ e adevărată, atunci și $P(n+1)$ este adevărată 
+\end{description}
+\end{frame}
+
+\begin{frame}{Inducție tare/completă}
+Pentru a demonstra că $P(n)$ este adevărată pentru orice număr natural $n$:
+\onslide<2>
+\begin{description}
+\item[Pas de inducție] Pentru orice număr natural $n$, demonstrăm că \\dacă $P(i)$ e adevărată pentru orice număr natural $i < n$, \\atunci și $P(n)$ este adevărată 
+\end{description}
+\end{frame}
+
+
+\begin{frame}{Inducție structurală}
+Pentru a demonstra că $P(t)$ este adevărată pentru orice AST (termen) $t$ dat de o gramatică (tip abstract de date):
+\begin{description}
+\item[Pas de inducție] Pentru orice AST (termen) valid $t = c(t_1,\ldots,t_n)$, demonstrăm că dacă $P(t_i)$ e adevărată pentru orice $i=\overline{1,n}$ pentru care $t_i$ de acelasi tip ca si $t$, atunci și P(t) e adevărată
+\end{description}
+
+\begin{block}{Observație}
+Demonstrațiile prin inducție structurală se reduc la analize de caz
+\end{block}
+\end{frame}
+
+\begin{subsection}{Aplicații}
+\begin{frame}<handout:0|article:0>{Inducție structurală}{Exemplu}
+\begin{theorem}
+Pentru orice expresie aritmetică $e$ în IMP și pentru  orice configurație $\c{c,r,s}$ a mașinii SMC în care $s$ e definită pentru toate locațiile lui $e$, există un număr întreg $n$ astfel încât 
+$$\c{e\cdot c,  r, s} \longrightarrow^\ast \c{c, n\cdot r, s}$$
+\end{theorem}
+\begin{block}{Reguli SMC pentru expresii aritmetice $E$ ::= $n \Smid {\mathrel{"!"} l} \Smid E \mathrel{iop} E$}
+$\begin{array}{l@{\extracolsep{1em}}r@{{}\longrightarrow{}}l}
+\mbox{IntCt}&
+\c{n\cdot c,r,s} & \c{c, n \cdot r, s}
+\\[1ex]
+\mbox{Loc}&
+\c{\terminal{!} l\cdot c,r,s} & \c{c, n \cdot r, s}  \Sdaca s(l) = n
+\\[1ex]
+\mbox{IntOpC}&
+\c{(E_1 \iop E_2) \cdot c, r, s} & \c{E_1 \cdot E_2 \cdot \iop \cdot c, r, s}
+\\[1ex]
+\mbox{IntOp}&
+\c{\iop \cdot c, n_2\cdot n_1 \cdot r, s} & \c{c, n \cdot r, s} \Sdaca n_1 \iop n_2 = n
+\end{array}$
+\end{block}
+\end{frame}
+
+\begin{frame}{\only<beamer|handout>{Inducție structurală}}{Exemplu}
+  \setcounter{theorem}{0}
+\begin{theorem}
+Pentru orice expresie aritmetică $e$ în IMP și pentru  orice configurație $\c{c,r,s}$ a mașinii SMC în care $s$ e definită pentru toate locațiile lui $e$, există un număr întreg $n$ astfel încât 
+$$\c{e\cdot c,  r, s} \longrightarrow^\ast \c{c, n\cdot r, s}$$
+\end{theorem}
+
+\begin{block}{Demonstrație (%
+Inducție structurală asupra  lui $e$)\hfill  $E$ ::= $n \Smid {\mathrel{"!"} l} \Smid E \mathrel{iop} E$}
+\onslide<2>
+\begin{enumerate}
+\item \structure{$e = n$}, unde $n$ întreg, atunci aplicăm axioma (IntCt) și avem 
+$\c{n\cdot c,  r, s} \xrightarrow{IntCt} \c{c, n\cdot r, s}$
+\item \structure{$e = \mathop{!} l$}, unde $l$ locație, atunci aplicăm axioma (Loc) și avem 
+$\c{! l\cdot c,  r, s} \xrightarrow{Loc} \c{c, n\cdot r, s}$, unde $n=s(l)$ există  ($s$ definit pentru $l$)
+\end{enumerate}
+\end{block}
+\end{frame}
+
+\begin{frame}<handout:0|article:0>{Inducție structurală}{Exemplu}
+\begin{theorem}
+Pentru orice expresie aritmetică $e$ în IMP și pentru  orice configurație $\c{c,r,s}$ a mașinii SMC în care $s$ e definită pentru toate locațiile lui $e$, există un număr întreg $n$ astfel încât 
+$$\c{e\cdot c,  r, s} \longrightarrow^\ast \c{c, n\cdot r, s}$$
+\end{theorem}
+\begin{block}{Reguli SMC pentru expresii  aritmetice $E$ ::= $n \Smid {\mathrel{"!"} l} \Smid E \mathrel{iop} E$}
+$\begin{array}{l@{\extracolsep{1em}}r@{{}\longrightarrow{}}l}
+\mbox{IntCt}&
+\c{n\cdot c,r,s} & \c{c, n \cdot r, s}
+\\[1ex]
+\mbox{Loc}&
+\c{\terminal{!} l\cdot c,r,s} & \c{c, n \cdot r, s}  \Sdaca s(l) = n
+\\[1ex]
+\mbox{IntOpC}&
+\c{(E_1 \iop E_2) \cdot c, r, s} & \c{E_1 \cdot E_2 \cdot \iop \cdot c, r, s}
+\\[1ex]
+\mbox{IntOp}&
+\c{\iop \cdot c, n_2\cdot n_1 \cdot r, s} & \c{c, n \cdot r, s} \Sdaca n_1 \iop n_2 = n
+\end{array}$
+\end{block}
+\end{frame}
+
+
+
+\begin{frame}{\only<beamer|handout>{Inducție structurală}}{\only<beamer|handout>{Exemplu}}
+\only<beamer|handout>{
+\begin{theorem}
+Pentru orice expresie aritmetică $e$ în IMP și pentru  orice configurație $\c{c,r,s}$ a mașinii SMC în care $s$ e definită pentru toate locațiile lui $e$, există un număr întreg $n$ astfel încât 
+$$\c{e\cdot c,  r, s} \longrightarrow^\ast \c{c, n\cdot r, s}$$
+\end{theorem}}
+
+\begin{block}{\only<beamer|handout>{Demonstrație (%
+Inducție structurală asupra  lui $e$)\hfill  $E$ ::= $n \Smid {\mathrel{"!"} l} \Smid E \mathrel{iop} E$}}
+\begin{enumerate}
+  \setcounter{enumi}{2}
+  \item 
+\structure{$e = e_1 \iop e_2$}, unde $e_1, e_2$ expresii
+\onslide<2>
+\begin{itemize}
+\item $\c{(e_1 \iop e_2) \cdot c, r, s}  \xrightarrow{IntOpC} \c{e_1 \cdot e_2 \cdot \iop \cdot c, r, s}$
+\item $\c{e_1 \cdot e_2 \cdot \iop \cdot c, r, s} \longrightarrow^\ast \c{e_2 \cdot \iop \cdot c, n_1 \cdot r, s}$ \hfill (ip. inducție)
+\item $\c{e_2 \cdot \iop \cdot c, n_1 \cdot r, s}  \longrightarrow^\ast \c{\iop \cdot c, n_2 \cdot n_1 \cdot r, s} $ \hfill (ip. inducție)
+\item $\c{\iop \cdot c, n_2 \cdot n_1 \cdot r, s}\xrightarrow{IntOp} \c{c, n \cdot r, s}$, unde $n_1 \iop n_2 = n$
+\end{itemize}
+\end{enumerate}
+\end{block}
+\end{frame}
+
+\begin{frame}{Ce putem/vrem să mai demonstrăm}
+\begin{block}{Evaluarea expresiilor booleene}
+Orice expresie booleană în IMP se evaluează folosind mașina SMC la un rezultat boolean
+\begin{itemize}
+\item depinzând (doar) de starea memoriei
+\item Într-un număr finit de pași
+\item Fără a modifica restul configurației
+\end{itemize}
+\end{block}
+\begin{block}{Evaluarea instrucțiunilor simple}
+Orice program IMP care nu conține while se termină
+\begin{itemize}
+\item Modificând doar conținutul memoriei
+\end{itemize}
+\end{block}
+
+\end{frame}
+
+\end{subsection}
+\end{section}

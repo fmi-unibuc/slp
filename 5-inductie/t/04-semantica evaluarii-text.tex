@@ -1,0 +1,290 @@
+%!TEX root = 04-semantica evaluarii.tex
+
+\begin{frame}{Mașini abstracte}{Avantaje și dezavantaje}
+\begin{block}{Puncte forte}
+\begin{itemize}
+\item Ușor (și eficient) de implementat
+\item (Relativ) ușor de manipulat stivele de control și date
+\item Foarte flexibilă --- limbajul stivelor fiind la alegerea celui ce o definește
+\end{itemize}
+\end{block}
+\vfill
+\begin{block}{Puncte slabe}
+\begin{itemize}
+\item Multe tranziții au doar scop sintactic, ne-computațional
+\item Datorită îmbogățirii limbajului, multe configurații sunt irelevante 
+\item Prea concretă si flexibilă, ceea ce îngreunează folosirea ei pentru raționamente formale
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}{Semantică operațională \structure{structurată (SOS)}}
+{Concept (Plotkin, 1981) }
+
+\begin{itemize}
+\vitem Definiția sistemului de tranziție trebuie să reflecte structura limbajului
+\item Tranzițiile pentru elemente compuse sa fie definite recursiv 
+\begin{itemize}
+\item în funcție de tranzițiile pe componente
+\end{itemize}
+\item Raționamente formale asupra sistemului prin inducție
+
+
+\vitem Execuția ca demonstrație 
+\item Controlul execuției este dat (intuitiv) de „firul deomnstrației“
+
+\vitem Claritate prin abstractizare
+\item Stivele de control și rezultate nu mai sunt necesare
+\end{itemize}
+\end{frame}
+
+\begin{section}{Definiții recursive}
+
+\begin{frame}{\only<beamer>{Definiții recursive}}{Exemple}
+  \begin{block}{Numerele naturale (Peano)}
+      \begin{itemize}
+      \item $0 \in \mathbb{N}$
+       \item Dacă $n \in \mathbb{N}$ atunci și $s(n) \in \mathbb{N}$
+      \end{itemize}
+  \end{block}
+  \begin{block}{Limbaj descris de o gramatică \hfill 
+\begin{minipage}{.35\columnwidth} \renewcommand{\syntaxKeyword}{}\syntax[\AExp]{\Int\Smid\terminal{!}\Id \Smid \AExp\iop \AExp}{}\end{minipage}}
+     \begin{itemize}
+	 \item Orice număr întreg $n$ este expresie
+         \item Pentru orice locație $l$, $\mathrel{!} l$ este expresie
+         \item Pentru orice simbol de operație întreagă $o$\\
+              Dacă $e_1$ și $e_2$ sunt expresii, atunci și $e_1 \mathrel{o} e_2$ este expresie
+      \end{itemize}
+  \end{block}
+  \begin{itemize} 
+        \item Arbori de parsare/arbori AST
+        \item Termeni AST descriși de un tip abstract de date
+       \item Termeni descriși de o signatură algebrică
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Reguli de deducție}
+   \begin{block}{Definiție}
+        O \structure{regulă de deducție} $r$ peste o mulțime T este o pereche $(H,c)$ unde 
+         \begin{itemize}
+             \item $H \subseteq T$ este mulțimea de \structure{ipoteze} ale regulii
+             \item $c\in T$ este \structure{concluzia} regulii
+         \end{itemize}         
+        Dacă mulțimea $H$ a ipotezelor e vidă, $r$ se numește \structure{axiomă}.
+
+        \structure{Prezentare arborescentă:}  $\frac{h_1\ h_2\ \cdots\ h_n}{c}$ pentru reguli și $\frac{\done}{c}$ pentru axiome.
+   \end{block}
+   \begin{block}{Exemplu (Peano):}
+      Fie $T = \{0,s,(,)\}^\star$ limbajul tuturor cuvintelor peste alfabetul $\{0, s,(,)\}$
+      \[{\cal R} = \{ (\emptyset, 0) \} \cup \{ (\{t\}, s ( t ) ) \mid t \in T\}\]
+    \end{block}
+\end{frame}
+
+\begin{frame}{Scheme de reguli de deducție}
+\begin{itemize}
+ \item
+   Reguli cu variabile și constrângeri asupra lor: 
+$\displaystyle\reg{c}{h_1 \cdots h_n}{\mbox{condiții}}$
+\item O schemă de reguli reprezintă mulțimea tuturor instanțelor obținute prin substituirea variabilelor astfel încât eventualele condiții să fie satisfăcute.
+\end{itemize}
+   \begin{block}{Exemplu (Peano):}
+ $\displaystyle\hfill \reg{0}{}{} \hfill \reg{s(t)}{t}{}\hfill\ $
+\end{block}
+   \begin{block}{Exemplu (expresii aritmetice):} 
+\begin{itemize}
+\item[]
+              \structure{Axiome:} \hfill $\displaystyle\reg{n}{}{n \mbox{ intreg}}$  \hfill $\displaystyle\reg{\mathrel{!} l}{}{l\mbox{ locație}}$\hfill\ 
+  
+
+\item[]              \structure{Regulă:} \hfill $\displaystyle\reg{e_1\mathrel{o} e_2}{e_1\si  e_2}{o \mbox{ operație întreagă}}$\hfill\;
+\end{itemize}
+       \end{block}
+\end{frame}
+
+\begin{frame}{Demonstrații deductive}{Prezentare ca arbori}
+   \begin{block}{Definiție}
+       Un \structure{arbore de demonstrație} folosind regullile $\cal R$ peste mulțimea $T$ satisface:
+     \begin{itemize} 
+         \item Orice nod este etichetat cu un element din $T$
+        \item Daca multimea etichetelor copiilor unui nod este $H$ și eticheta nodului este $c$, atunci $(H,c) \in \cal R$
+         \item Înălțimea arborelui este finită
+      \end{itemize}
+    Un arbore de demonstrație e o demonstrație pentru eticheta rădăcinii lui.
+    \end{block}
+
+ \begin{block}{Exemplu (expresii aritmetice)}
+     \[\reg{(3 + ! x) * 5 }{
+            {\displaystyle\reg{3 + ! x}{\displaystyle\reg{3}{}{}\si \reg{ ! x}{}{}}{}\si \reg{5}{}{}}{}}{}\]
+  \end{block}
+\end{frame}
+
+\begin{frame}{Demonstrații deductive}{Prezentare liniară}
+   \begin{block}{Definiție}
+       O \structure{demonstrație} a lui $c$ folosind mulțimea de reguli $\cal R$  este o secvență
+de reguli $(H_1, c_1), \ldots (H_n, c_n)$ satisfacând următoarele    
+     \begin{itemize}
+          \item $(H_i, c_i) \in \cal R$ pentru orice $1\leq i \leq n$
+          \item $c_n = c$
+          \item Orice ipoteză $h \in H_i$ a fost deja demonstrată, i.e., există $c_j = h$ cu $j<i$ 
+     \end{itemize}
+    \end{block}
+
+  \begin{block}{Exemplu}
+      $(\emptyset, 3)$,
+      $(\emptyset, 5)$,
+      $(\emptyset, ! x)$,
+      $(\{3, !x \}, 3 + ! x)$,
+     $(\{3 + ! x, 5\}, (3 + ! x) * 5)$.
+  \end{block}
+\end{frame}
+
+\begin{frame}{Definiții recursive}{Definiție formală}
+  \begin{block}{Definiție}
+     Mulțimea \structure{definită recursiv} de regulile {\cal R} este submulțimea elementelor $c$ ale lui $T$ demonstrabile folosind $\cal R$.
+  \end{block}
+
+\begin{itemize}
+  \item Denumire alternativă: mulțimea \structure{teoremelor} lui ${\cal R}$
+  \item Cea mai mică mulțime A „închisă“ la regulile din $\cal R$, i.e.,  satisfăcând:
+  \begin{itemize}
+      \item pentru orice regulă $(H,c) \in {\cal R}$, dacă $H\subseteq A$ atunci $c\in A$.
+  \end{itemize}
+\end{itemize}
+
+\end{frame}
+
+
+\end{section}
+
+\begin{section}{Semantică naturală}
+\begin{frame}{Semantica naturală / a evaluării}{Expresii aritmetice}
+Definim recursiv graficul relației de evaluare ca mulțime de perechi $(e, s, n)$
+\begin{itemize}
+  \item $e$ --- expresie, $s$ --- stare a memorie, $n$ --- valoare întreagă
+  \item Notăm $\S{\c{e,s}}{n}$ pentru a sugera ideea de funcție de evaluare
+\end{itemize}
+
+\vfill\begin{block}{Axiome și reguli}
+\begin{itemize}
+\item[] $\reg[int]{\S{\c{n,s}}{n}}{}{n \mbox{ întreg}}$
+
+\item[]$\reg[loc]{\S{\c{{\mathrel{!} l},s}}{n}}{}{l \mbox{ locație, cu $l\in Dom(s)$ și $s(l)=n$}}$
+
+\item[]$\reg[iop]{\S{\c{e_1\mathrel{o} e_2,s}}{n}}{\S{\c{e_1,s}}{n_1}\si \S{\c{e_2,s}}{n_2}}{o \mbox{ operație întreagă și $n = n_1 \mathrel{o} n_2$}}$
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}{Inducție deductivă}
+Pentru a demonstra că $P(t)$ este adevărată pentru orice element al unei mulțimi $A$ definite recursiv de regulile $\cal R$:
+\begin{itemize}
+  \item Considerăm mulțimea elementelor $t$ din $A$ pentru care $P(t)$ e adevărată
+ \item Arătăm că este închisă la regulile din $\cal R$
+\end{itemize}
+
+\begin{block}{Concret}
+Pentru fiecare regulă $(H,c)$, demonstrăm că
+\begin{itemize} 
+\item Dacă $P(h)$ e adevărată pentru orice ipoteză $h\in H$,
+\item atunci și $P(c)$ e adevărată.
+\end{itemize}	
+\end{block}
+\end{frame}
+
+\begin{frame}{Inducție deductivă}{Exemplu}
+\begin{theorem}[Corespondență între semantica naturală și mașina SMC]
+Dacă $\S{\c{e,s}}{n}$ atunci $\c{e\cdot c, r, s} \longrightarrow^\ast \c{c, n\cdot r, s}$.
+\end{theorem}
+\begin{block}{Demonstrație (inducție deductivă asupra relației $\S{}{}$)}
+  \begin{description} 
+     \item[$\reg{\S{\c{n,s}}{n}}{}{n \mbox{ întreg}}$:] $\c{n \cdot c, r, s} \xrightarrow{\mbox{IntCt}} \c{c, n\cdot r, s}$ 
+    \item[$\reg{\S{\c{{\mathrel{!} l},s}}{n}}{}{l \mbox{ locație, cu $l\in Dom(s)$ și $s(l)=n$}}$ :] 
+$\c{{\mathrel{!} l} \cdot c, r, s} \xrightarrow{\mbox{Loc}} \c{c, n\cdot r, s}$ 
+    \item[$\reg{\S{\c{e_1\mathrel{o} e_2,s}}{n}}{\S{\c{e_1,s}}{n_1}\si \S{\c{e_2,s}}{n_2}}{o \mbox{ operație întreagă și $n = n_1 \mathrel{o} n_2$}}$ :]
+
+     \item[]\vspace{-1ex}$\begin{array}{l}
+  \c{e_1\mathrel{o} e_2 \cdot c, r, s} \xrightarrow{\mbox{IntOpC}} \c{e_1 \cdot e_2 \cdot o \cdot c, r, s} \xrightarrow{\mbox{ip. ind}}
+\\
+  \c{e_2 \cdot o \cdot c, n_1 \cdot r, s}  \xrightarrow{\mbox{ip. ind}}   \c{o \cdot c, n_2 \cdot n_1 \cdot r, s}  \xrightarrow{\mbox{IntOp}}
+\\
+   \c{c, n \cdot r, s}
+\end{array} $
+  \end{description}
+\end{block}
+\end{frame}
+
+\end{section}
+
+\begin{section}{O semantica naturală pentru limbajului IMP}
+\begin{frame}{Evaluarea fragmentelor de programe}
+\begin{itemize}
+\item Expresiile (aritmetice sau booleene) se evaluează la valori
+\item Comenzile modifică starea
+\vitem Considerăm „valoare“ a execuției unui (fragment de) program o pereche $\c{v,s}$, unde
+\begin{itemize}
+\item $s$ este starea obținută după execuție
+\item $v$ este un întreg (pentru expresii aritmetice), o valoare booleană (pentru comparații) sau {\tt skip} (pentru comenzi)
+\end{itemize}
+\vitem Definim recursiv relația de evaluare $\S{\c{p,s}}{\c{v,s'}}$
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Evaluarea expresiilor}
+
+\begin{itemize}
+\item[] $\reg[ct]{\S{\c{v,s}}{\c{v,s}}}{}{v \mbox{ întreg sau boolean}}$
+
+\vitem[]
+$\reg[loc]{\S{\c{{\mathrel{!} l},s}}{\c{n,s}}}{}{l \mbox{ locație, cu $l\in Dom(s)$ și $s(l)=n$}}$
+
+\vitem[]
+$\reg[op]{\S{\c{e_1\mathrel{o} e_2,s}}{\c{v,s_2}}}{\S{\c{e_1,s}}{\c{n_1, s_1}}\si \S{\c{e_2,s_1}}{\c{n_2, s_2}}}{v = n_1 \mathrel{o} n_2}$
+
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Evaluarea comenzilor nerepetitive}
+
+\begin{itemize}
+\item[] $\reg[skip]{\S{\c{\Sskip,s}}{\c{\Sskip,s}}}{}{}$
+
+\vitem[]
+$\reg[asgn]{\S{\c{{l\mathrel{:=} e},s}}{\c{\Sskip,s''}}}{\S{\c{e,s}}{\c{n,s'}}}{s'' = s'[ l \mapsto n]}$
+
+\vitem[]
+$\reg[seq]{\S{\c{c_1\mathrel{;} c_2,s}}{\c{\Sskip,s_2}}}{\S{\c{c_1,s}}{\c{\Sskip, s_1}}\si \S{\c{c_2,s_1}}{\c{\Sskip, s_2}}}{}$
+
+\vitem[]
+$\reg[if-true]{\S{\c{\Sif b \Sthen c_1 \Selse c_2,s}}{\c{\Sskip,s_1}}}{\S{\c{b,s}}{\c{\Strue, s'}}\si \S{\c{c_1,s'}}{\c{\Sskip, s_1}}}{}$
+
+\vitem[]
+$\reg[if-false]{\S{\c{\Sif b \Sthen c_1 \Selse c_2,s}}{\c{\Sskip,s_2}}}{\S{\c{b,s}}{\c{\Sfalse, s'}}\si \S{\c{c_2,s'}}{\c{\Sskip, s_2}}}{}$
+
+
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Evaluarea lui $\Swhile$}
+\ 
+
+\medskip\vfill
+$\reg{\S{\c{\Swhile b \Sdo c,s}}{\c{\Sskip,s'''}}}{\S{\c{b,s}}{\c{\Strue, s'}}\si \S{\c{c,s'}}{\c{\Sskip, s''}}\si \S{\c{\Swhile b \Sdo c,s''}}{\c{\Sskip,s'''}}}{}$
+
+\hfill ({\sc while-true})
+
+\vfill
+$\reg[while-false]{\S{\c{\Swhile b \Sdo c,s}}{\c{\Sskip,s'}}}{\S{\c{b,s}}{\c{\Sfalse, s'}}}{}$
+
+\vfill
+\end{frame}
+
+\begin{frame}{Ce putem/vrem să demonstrăm}
+\begin{itemize}
+\item Corespondența completă între semantica naturală și mașina SMC: dacă $\S{\c{St, s}}{\c{\Sskip, s'}}$ atunci \[\c{St\cdot c, r, s} \longrightarrow^\ast \c{c, r, s'}\]
+\vitem Programul $c$ dat de $\Swhile {\Strue} \Sdo {\Sskip}$ nu poate fi evaluat.  Nu există stările $s, s'$ și valoarea $v$ astfel încât $\S{\c{c,s}}{\c{v,s'}}$. 
+\end{itemize}
+\end{frame}
+
+
+\end{section}

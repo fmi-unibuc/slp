@@ -1,0 +1,264 @@
+\documentclass[xcolor=pdftex,romanian,colorlinks]{beamer}
+
+\usepackage{../tslides}
+\usepackage[all]{xy}
+
+\title[SLP---Introducere]{Semantica limbajelor de programare}
+\subtitle{(bazat pe cursul omonim de la Universitatea Cambridge)}
+\begin{document}
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{section}{Motivație}
+\begin{frame}{Ce înseamnă semantica formală?}%
+{Ce definește un limbaj de programare?}
+\begin{description}
+\vitem[Sintaxa] Simboluri de operație, cuvinte cheie, descriere (formală) a programelor/expresiilor bine formate
+\vitem[Practica] Un limbaj e definit de modul cum poate fi folosit
+\begin{itemize}
+\item Manual de utilizare și exemple de bune practici
+\item Implementare (compilator/interpretor)
+\item Instrumente ajutătoare (analizor de sintaxă, depanator)
+\end{itemize}  
+\vitem[Semantica?] Ce înseamnă / care e comportamentul unei instrucțiuni?
+\begin{itemize}
+\item De cele mai multe ori se dă din umeri și se spune că \structure{Practica} e suficientă 
+\end{itemize}
+\end{description}
+\end{frame}
+
+\begin{frame}{La ce folosește semantica}
+\begin{itemize}
+\item Să înțelegem un limbaj în profunzime
+\begin{itemize}
+\item Ca programator: pe ce mă pot baza când programez în limbajul dat
+\item Ca implementator al limbajului: ce garanții trebuie să ofer
+\end{itemize}
+\vitem Ca instrument în proiectarea unui nou limbaj / a unei extensii
+ \begin{itemize}
+\item Înțelegerea componentelor și a relațiilor dintre ele
+\item Exprimarea (și motivarea)  deciziilor de proiectare
+\item Demonstrarea unor proprietăți generice ale limbajului\\
+E.g., execuția nu se va bloca pentru programe care trec de analiza tipurilor
+\end{itemize}
+\vitem Ca bază pentru demonstrarea corectitudinii programelor.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{C}
+\onslide<2>
+\begin{block}{}
+\begin{verbatim}
+  int main(void) {
+    int x = 3;
+    return x++ + x++ + x++ + x++;
+  }
+\end{verbatim}
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile]{C}
+
+\begin{block}{}
+\begin{verbatim}
+  int main(void) {
+    int x = 0;
+    return (x = 1) + (x = 2);
+  }
+\end{verbatim}
+\end{block}
+\onslide<2>
+Conform standardului C, comportamentul programului este \structure{nedefinit}.
+\begin{itemize}
+\item GCC4, MSVC: valoarea întoarsă e \alert{4}
+\item GCC3, ICC, Clang: valoarea întoarsă e \alert{3}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{C}
+
+\begin{block}{}
+\begin{verbatim}
+  int r; 
+  int f(int x) {
+    return (r = x);
+  }
+  int main() {
+    return f(1) + f(2), r;
+  }
+\end{verbatim}
+\end{block}
+
+\onslide<2> Conform standardului C, comportamentul programului este \structure{subspecificat}:\\
+poate întoarce atât valoarea \alert{1} cât și \alert{2}.
+\end{frame}
+
+\begin{frame}[fragile]{C\#}
+\onslide<2>
+\begin{verbatim}
+delegate int IntThunk();
+class M {
+    public static void Main() {
+        IntThunk[] funcs = new IntThunk[11];
+        for (int i = 0; i <= 10; i++) {
+            funcs[i] = delegate() { return i; };
+        }
+        foreach (IntThunk f in funcs) {
+            System.Console.WriteLine(f());
+        }
+    }
+}
+\end{verbatim}
+\end{frame}
+
+
+\begin{frame}[fragile]{C++}
+\onslide<2>
+\begin{verbatim}
+#include <iostream>
+#include <array>
+#include <functional>
+using namespace std;
+
+int main() {
+    array<function<int()>,11> funcs;
+    for (auto i = 0; i < 11; i++) {
+    	funcs[i] = [&]() {return i;};
+    }
+    for (auto f : funcs) {
+    	cout << f() << endl;
+    }
+}
+\end{verbatim}
+\end{frame}
+
+\begin{frame}[fragile]{JavaScript}
+\onslide<2>
+\begin{verbatim}
+function bar(x) { 
+  return function() { var x = 5; return x; }; 
+}
+var f = bar(200);
+f()
+\end{verbatim}
+\end{frame}
+
+\begin{frame}[fragile]{JavaScript}
+\begin{verbatim}
+function bar(x) { 
+  return function() { var x = x; return x; }; 
+}
+var f = bar(200);
+f()
+\end{verbatim}
+\end{frame}
+
+\begin{frame}[fragile]{Java}
+\onslide<2>
+\small{\begin{verbatim}
+class Main {
+    interface F<A, B> {          B a(A x);         }
+    static <A, B, C> F<A, C> c(final F<A, B> f, final F<B, C> g) {
+        return new F<A, C>() { 
+            public C a(A x) {  return g.a(f.a(x)); }
+        };
+    }
+    public static void main(String[] args) {
+        final Integer a = 2, b = 1;
+        F<Integer, Integer> f = new F<Integer, Integer>() { 
+            public Integer a(Integer x) { return x + b; } };
+        F<Integer, Integer> g = new F<Integer, Integer>() { 
+            public Integer a(Integer x) { return a * x; } };
+        F<Integer, Integer> h = c( f, g );
+        System.out.println(h(5));
+    }
+}
+\end{verbatim}}
+\end{frame}
+
+
+\end{section}
+
+\begin{section}{Pe scurt}
+\begin{frame}{Descriere curs}
+\begin{itemize}
+ \item Definirea unui mini-limbaj de programare
+	\begin{itemize}
+        \item Cu extensii, atât declarative, cât și imperative
+	\item Definirea sistemurilor de tipuri
+	\end{itemize}
+ \vitem Elemente de proiectarea limbajelor de programare
+	\begin{itemize}
+		\item Tipuri, Funcții, Date structurate, Referințe
+		\item Subtipuri, Obiecte, Interacție și Concurență
+	\end{itemize}
+ \vitem Proprietăți ale limbajelor de programare și ale programelor lor
+   \begin{itemize}
+        \item Instrumente (simple) matematice pentru studiul programelor
+	\item Corectitudinea programelor în raport cu un sistem de tipuri
+	\item Echivalența semantică dintre programe
+   \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Obiectiv}
+\begin{itemize}
+\item Formalizarea și înțelegerea conceptelor de bază în proiectarea limbajelor de programare
+\begin{itemize}
+  \item Sintaxă, semantica execuției, semantica tipurilor
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Privire de ansamblu}{}
+\xymatrix@C=1em@R=5em{
+\mbox{Limbaje formale} \ar[dr]& \mbox{Logică}\ar[d] & \mbox{C/Java/\ldots}\ar[dl] & \mbox{Calculabilitate}\ar[dll]\\
+&\mbox{\large \color{blue}Semantica}\ar[dl]\ar[d]\ar[dr]\ar[drr] \\
+\mbox{Compilare} & \mbox{Verificare} & \mbox{Concurență} & \mbox{Semantica denotațională} 
+}
+\end{frame}
+
+
+\end{section}
+
+\begin{section}{Evaluare}
+\begin{frame}{Evaluare}
+\begin{itemize}
+\item Examen scris: 60-70\%
+\vitem Recenzie detaliată a unui articol (la alegere) din track-ul principal la una din conferințele POPL sau ESOP: 30\%
+\vitem Prezentarea articolului recenzat la seminar: 10\% 
+\vitem Activați-vă (dacă e cazul) contul de Moodle
+\begin{itemize}
+\item Alegerea articolului pe care îl veți recenza trebuie postată pe Moodle, pentru a evita situația când mai mulți oameni fac recenzie aceluiași articol.
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Examenul scris}
+\begin{itemize}
+\item Va consta din probleme
+\vitem Scopul lui e să verifice fixarea cunoștințelor predate
+\vitem Cu acces la materiale tipărite/xeroxate (nu scrise de mână)
+\end{itemize}
+
+\begin{block}{Precizare}
+Pentru promovare, nota de la examenul scris trebuie să fie minim 5.
+\end{block}
+\end{frame}
+\end{section}
+
+\begin{frame}{Resurse}
+\begin{itemize}
+\item Pagina Moodle a cursului: \url{http://moodle.fmi.unibuc.ro/course/view.php?id=522}
+\begin{itemize}
+\item Prezentările cursurilor, forumuri, resurse electronice
+\end{itemize}
+\vitem Pagina cursului similar de la Cambridge \url{http://www.cl.cam.ac.uk/teaching/1415/Semantics}
+\end{itemize}
+\end{frame}
+\end{document}
+
+
+

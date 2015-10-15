@@ -1,0 +1,372 @@
+\documentclass[xcolor=pdftex,romanian,colorlinks]{beamer}
+
+\usepackage{../tslides}
+
+
+\title[SLP---interactie]{PARALLEL-IMP}
+\subtitle{RECORD-IMP + intrare/iesire + procese}
+\begin{document}
+\maketitle
+
+\begin{frame}{Programe interactive}
+\begin{block}{Definiție} Programe care interacționează cu „mediul“
+\begin{itemize}
+\item Interacțiune cu utilizatorul: Intrare/Ieșire
+\item Interacțiune cu alte programe (procese): Paralelism și sincronizare
+\end{itemize} 
+\end{block}
+
+\begin{block}{Caracteristici}
+\begin{itemize}
+\item Interacțiunea poate fi importantă  
+\item Terminarea nu este neapărat dorită 
+\item Exemple: procese reactive, servicii, sisteme de operare, procese server 
+\end{itemize}
+\end{block}
+\end{frame}
+
+
+\begin{section}{Limbajul IMP+I/O}
+\begin{frame}[fragile]{IMP+I/O: Limbajul IMP cu intrare/ieșire}
+\begin{itemize}
+\item Adăugăm o constantă funcție {\bf read\_int} care citește un întreg
+\item Adăugăm o constantă funcție {\bf print\_int} care afișează un întreg
+\end{itemize}
+
+\begin{syntaxBlock}{\Exp}
+\vspace{-5ex}
+\alert{
+\begin{itemize}
+\item[]\renewcommand{\syntaxKeyword}{}
+\syntax{\ldots}{}
+\syntaxCont{\terminal{read\_int}}{}
+\syntaxCont{\terminal{print\_int}}{}
+	\end{itemize}
+}
+\end{syntaxBlock}
+
+\vfill\begin{block}{Exemplu}
+\vspace{-3ex}\hfill\begin{minipage}{.8\columnwidth}
+\begin{asciiml}
+let rec fact : int -> int = 
+  fun (n:int) -> if n <= 1 then 1 else n * (fact (n - 1))
+in print_int (fact (read_int()))
+\end{asciiml}
+\end{minipage}
+\end{block}
+
+\begin{block}{Tipuri}
+\begin{itemize}
+\item[] $\reg[tRead]{\tjud{read\_int}{{\Sunit} \rightarrow {\Sint}}{}}{}{}$
+\item[] $\reg[tPrint]{\tjud{print\_int}{{\Sint} \rightarrow {\Sunit}}{}}{}{}$
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{subsection}{Semantica programelor interactive}
+\begin{frame}{Modelare semantică}{Sisteme de tranziție cu etichete}
+\begin{block}{Definiție (Sistem de tranziție cu etichete)}
+Un sistem de tranziție cu etichete $({\it Config}, {\it Act}, \rightarrow)$ este dat de 
+\begin{itemize}
+\item O mulțime {\it Config} a \structure{configurațiilor} (stărilor)
+\item O mulțime {\it Act}  a \structure{acțiunilor} (etichetelor)
+\item O relație „de tranziție“ $\rightarrow \subseteq {\it Config} \times {\it Act} \times {\it Config}$
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}{Notații}
+\begin{block}{Tranziție $(c,\alpha,c') \in \rightarrow$} 
+Citim $c$ tranziționează în $c'$ cu acțiunea $\alpha$ și notăm cu
+\[c \xrightarrow{\alpha} c'\]
+\end{block}
+
+\begin{block}{Acțiunea vidă}
+Fixăm o acțiune $\epsilon$ numită acțiunea vidă (sau neobservabilă) și notăm  $c \xrightarrow{\epsilon} c'$ cu $c \rightarrow c'$
+\end{block}
+
+\begin{block}{Relația cu sistemele de tranziții}
+Orice sistem de tranziții poate fi privit ca un sistem de tranziții cu etichete, etichetând fiecare tranziție cu $\epsilon$.
+\end{block}
+
+\end{frame}
+\end{subsection}
+
+\begin{subsection}{Semantica IMP+I/O}
+\begin{frame}{Relația de tranziție}
+Relația de tranziție semantică pentru IMP+I/O este de forma:
+\[\c{e,s}\xrightarrow{\alpha}\c{e',s'}\]
+unde
+\begin{itemize}
+\item $e$ și $e'$ sunt fragmente de program
+\item $s$ și $s'$ sunt stări ale memoriei 
+\item $\alpha$ este o acțiune
+\alert{
+\renewcommand{\syntaxKeyword}{}
+\syntax[\structure{\alpha}]{\epsilon \Smid \Sget(\Int) \Smid \Sput(\Int)}{}
+}
+unde $\Int$ e un număr întreg
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Considerente generale}
+Regulile pentru elementele existente sunt similare cu cele deja definite
+\begin{itemize}
+\item Axiomele au acțiuni neobservabile ($\epsilon$) și se notează la fel
+\[\reg[Atrib]{\Ss{\c{l \terminal{:=} n,s}}{\c{\Sskip,s'}}}{}{l\in \Dom s \wedge s'=s[l \mapsto n]}\]
+\vitem Regulile structurale propagă acțiunile de la subcomponente
+\[
+\reg[AtribD]{\Ss[\alpha]{\c{l \terminal{:=} e ,s}}{\c{l \terminal{:=} e' ,s'}}}{\Ss[\alpha]{\c{e,s}}{\c{e',s'}}}{}
+\]
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Reguli pentru intrare/ieșire}
+\begin{block}{Intrare}
+\[\reg[Read]{\Ss[read(n)]{\c{\terminal{read\_int} {\Sskip},s}}{\c{n,s}}}{}{}\]
+\end{block}
+
+\begin{block}{Ieșire}
+\[\reg[PrintS]{\Ss[\alpha]{\c{\terminal{print\_int} e, s}}{\c{\terminal{print\_int} e', s'}}}{\Ss[\alpha]{\c{e,s}}{\c{e',s'}}}{}\]
+
+\[\reg[Print]{\Ss[print(n)]{\c{\terminal{print\_int} n,s}}{\c{\Sskip,s}}}{}{}\]
+\end{block}
+
+\end{frame}
+\end{subsection}
+\end{section}
+
+\begin{section}{Paralelism si comunicare}
+\begin{frame}[fragile]{Procese in paralel}
+\begin{block}{Sintaxă}
+\begin{syntaxBlock}{\Exp}
+\vspace{-5ex}
+\alert{
+\begin{itemize}
+\item[]\renewcommand{\syntaxKeyword}{}
+\syntax{\ldots}{}
+\syntaxCont{\Exp \Spar \Exp}{}
+	\end{itemize}
+}
+\end{syntaxBlock}
+\end{block}
+
+\begin{block}{Exemplu}
+\begin{asciiml}
+let i = ref 0 in
+let o = ref 0 in 
+  (while !i <= 0 do () done ;
+   let rec fact  : int -> int = 
+           fun (n:int) -> if n <= 1 then 1 else n * (fact (n - 1))
+   in o := fact !i)
+  ||
+  (i := 10 ;
+   while !o <= 0 do () done ; 
+   o := !o / 2)
+\end{asciiml}
+\end{block}
+\end{frame}
+
+\begin{frame}{Tipuri și semantică}
+\begin{block}{Tipuri}
+\begin{itemize}
+\item[]$\reg[tPar]{\tjud{e_1\Spar e_2}{\Sunit}{}}{\tjud{e_1}{\Sunit}{} \si \tjud{e_2}{\Sunit}{}}{}$
+\end{itemize}
+\end{block}
+\vfill
+\begin{block}{Semantică}
+\begin{itemize}
+\item[] $\reg[ParS]{\Ss[\alpha]{\c{e_1\Spar e_2,s}}{\c{e_1'\Spar e_2,s'}}}{\Ss[\alpha]{\c{e_1,s}}{\c{e_1',s'}}}{}$
+\hfill
+$\reg[EndS]{\Ss{\c{\Sskip\Spar e_2,s}}{\c{e_2,s}}}{}{}$
+
+\item[]
+$\reg[ParD]{\Ss[\alpha]{\c{e_1\Spar e_2,s}}{\c{e_1\Spar e_2',s'}}}{\Ss[\alpha]{\c{e_2,s}}{\c{e_2',s'}}}{}$
+\hfill
+$\reg[EndD]{\Ss{\c{e_1\Spar\Sskip,s}}{\c{e_1,s}}}{}{}$
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{subsection}{Comunicare}
+\begin{frame}{Canale de comunicare}
+\begin{block}{Sintaxă}
+Redefinim I/O folosind canale.
+\begin{syntaxBlock}{\Exp}
+\vspace{-5ex}
+\alert{
+\begin{itemize}
+\item[]\renewcommand{\syntaxKeyword}{}
+\syntax{\ldots}{}
+\syntaxCont{\SnewChannel \Tip }{}
+\syntaxCont{\Ssend \Exp \Son \Exp}{}
+\syntaxCont{\Sreceive \Exp}{}
+\syntaxCont{{\Scin} \Smid {\Scout}}{}
+\item[]
+\syntax[\Tip]{\ldots \Smid \Tip \Schannel}{}
+\end{itemize}
+}
+\end{syntaxBlock}
+\end{block}
+\end{frame}
+
+
+\begin{frame}[fragile]{Canale de comunicare}{Exemplu}
+\begin{asciiml}
+let c = newChannel of int in
+   (let rec fact : int -> int = 
+           fun (n:int) -> if n <= 1 then 1 else n * (fact (n - 1)) in
+    while true do 
+       send fact (receive on c) on c
+    done)
+   ||
+   (send (receive on cin) on c;
+    send (receive on c) on cout)
+\end{asciiml}
+\begin{itemize}
+\item Un canal de comunicare $\terminal{c}$
+\item Un serviciu, care dacă primește un întreg $n$ pe canalul $\terminal{c}$, trimite pe același canal numărul $n!$.
+\item Un proces client care citește un număr de la intrare, îl trimite serviciului, așteaptă răspunsul de la serviciu pe care îl retrimite la ieșire. 
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Canale de comunicare}{Exemplu — Servire în paralel?}
+\begin{asciiml}
+let c = newChannel of int in
+   (let rec fact : int -> int = 
+           fun (n:int) -> if n <= 1 then 1 else n * (fact (n - 1)) in
+    let rec server : unit = 
+      let n = receive on c in
+         send fact n on c || server
+    in server)
+   ||
+   (send (receive on cin) on c;
+    send (receive on c) on cout)
+\end{asciiml}
+
+\onslide<2-> E ok că se folosește același canal c și pentru cerere și pentru răspuns?
+\begin{itemize}
+\item<3> E posibil ca răspunsurile să se amestece între clienți
+\item<3> E posibil ca răspunsul serverului să fie interpretat ca cerere de o nouă instanță a serverului
+\end{itemize}
+\end{frame}
+
+
+
+\begin{frame}[fragile]{Canale de comunicare}{Exemplu mai serios}
+\begin{asciiml}
+let c = newChannel of {data: int; return:channel} in
+   (let rec fact : int -> int = 
+           fun (n:int) -> if n <= 1 then 1 else n * (fact (n - 1)) in
+    let rec serviciu : unit = 
+       let msg = receive on c in 
+          send fact msg.data on msg.return
+          ||
+          serviciu
+   )
+   ||
+   (let c1 = newChannel of int in
+      send {data=receive on cin; return=c1} on c;
+      send (receive on c1) on cout)
+   ||   
+   (let c2 = newChannel of int in
+      send {data=receive on cin; return=c2} on c;
+      send (receive on c2) on cout)
+\end{asciiml}
+\end{frame}
+
+
+\begin{frame}{Tipuri}
+\begin{itemize}
+\item[] $\reg[tRcv]{\tjud{\Sreceive e}{T}}{\tjud{e}{T\Schannel}}{}$
+\item[] \hfill $\reg[tIn]{\tjud{\Sreceive{\Scin}}{\Sint}}{}{}$
+\vitem[] $\reg[tSnd]{\tjud{\Ssend e \Son e'}{\Sunit}}{\tjud{e}{T}\si \tjud{e'}{T\Schannel}}{}$
+\item[] \hfill $\reg[tOut]{\tjud{\Ssend e \Son{\Scout}}{\Sunit}}{\tjud{e}{\Sint}}{}$
+\vitem[] $\reg[tChn]{\tjud{\SnewChannel T}{T\Schannel}}{}{}$
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Semantică}
+\begin{block}{Comunicare sincronă / blocantă}
+Schimbul de mesaje se face sincron, între un proces care vrea să trimită o valoare pe un canal și un proces care așteaptă sa primească o valoare pe același canal.  În acest scenariu, comunicarea este și un mijloc direct de sincronizare.
+
+\structure{Exemplu:} Telefon / Chat (online)
+\end{block}
+
+\begin{block}{Comunicare asincronă / folosind cozi de mesaje}
+Un proces poate trimite oricând o valoare pe un canal, continuându-și execuția; valorile sunt depozitate într-o zonă tampon.  Un proces care citește valori de pe canalul respectiv, va inspecta zona tampon, blocându-se doar dacă aceasta este vidă.
+
+\structure{Exemplu:} Poșta (electronică sau nu) 
+\end{block}
+\end{frame}
+
+\begin{frame}{Partea comună a semanticii}{Valori, canale, și reguli structurale}
+\renewcommand{\syntaxKeyword}{}
+\begin{itemize}
+\item[] \syntax[v]{\ldots\Smid c}{}
+\item[] \syntax[c]{{\Scin} \Smid {\Scout} \Smid \mbox{alte nume de canale}}{}
+\vitem[] $\reg[rcvS]{\Ss[\alpha]{\c{\Sreceive e,s}}{\c{\Sreceive e',s'}}}{\Ss[\alpha]{\c{e,s}}{\c{e',s'}}}{}$
+\vitem[] $\reg[sndD]{\Ss[\alpha]{\c{\Ssend e_1 \Son e_2,s}}{\c{\Ssend e_1 \Son e_2',s'}}}{\Ss[\alpha]{\c{e_2,s}}{\c{e_2',s'}}}{}$
+\vitem[] $\reg[sndS]{\Ss[\alpha]{\c{\Ssend e \Son c,s}}{\c{\Ssend e' \Son c,s'}}}{\Ss[\alpha]{\c{e,s}}{\c{e',s'}}}{}$
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Partea comună a semanticii}{Reguli locale}
+\renewcommand{\syntaxKeyword}{}
+\begin{itemize}
+\item Folosim acțiuni pentru a semnala trimiterea de mesaje ($\Asnd{c}{v}$), primirea de mesaje ($\Arcv{c}{v}$) și crearea de canale noi ($\Anew{c}$).
+\item[] \syntax[\alpha]{\epsilon\Smid \Asnd{c}{v} \Smid \Arcv{c}{v} \Smid \Anew{c}}{}
+\vitem[] $\reg[lRcv]{\Ss[\Arcv{c}{v}]{\c{\Sreceive c,s}}{\c{v,s}}}{}{}$
+\vitem[] $\reg[lSnd]{\Ss[\Asnd{c}{v}]{\c{\Ssend v \Son c,s}}{\c{\Sskip,s}}}{}{}$
+\vitem[] $\reg[lNew]{\Ss[\Anew{c}]{\c{\SnewChannel T,s}}{\c{c,s}}}{}{}$
+\item Observați că valoarea $v$ din acțiunea $\Arcv{c}{v}$ și canalul $c$ din acțiunea $\Anew{c}$ sunt estimate / „ghicite“ în mode nedeterminist.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Partea comună a semanticii}{Reguli globale}
+\begin{block}{Local vs Global}
+Definim un sistem de tranziție „global“ între configurații de forma
+$\c{e,s,C}$ unde $C$ este o structură matematică asociată canalelor.  În ambele semantici, acest sistem inhibă comunicațiile cu exteriorul în afara canalelor $\Scin$ și $\Scout$.
+\end{block}
+\begin{itemize}
+\item[] $\reg[gEps]{\Ss{\c{e,s,C}}{\c{e',s',C}}}{\Ss{\c{e,s}}{\c{e',s'}}}{}$
+\hfill tranziții fără acțiuni
+\vitem[] $\reg[gIn]{\Ss[\Arcv{\Scin}{n}]{\c{e,s,C}}{\c{e',s',C}}}{\Ss[\Arcv{\Scin}{n}]{\c{e,s}}{\c{e',s'}}}{}$
+\hfill citire de la intrare
+\vitem[] $\reg[gOut]{\Ss[\Asnd{\Scout}{n}]{\c{e,s,C}}{\c{e',s',C}}}{\Ss[\Asnd{\Scout}{n}]{\c{e,s}}{\c{e',s'}}}{}$
+\hfill scriere la ieșire
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Comunicare sincronă}{Reguli specifice}
+Structura $C$ asociată canalelor este o mulțime de nume de canale care conține $\Scin$ și $\Scout$, reprezentând mulțimea canalelor folosite în program.
+\begin{itemize}
+\item Un canal nou e acceptat doar dacă nu a mai fost deja folosit:
+\item[] $\reg[sNew]{\Ss{\c{e,s,C}}{\c{e',s',C\cup \{c\}}}}{\Ss[\Anew{c}]{\c{e,s}}{\c{e',s'}}}{c\not\in C}$
+\item Sincronizarea și comunicarea între procese
+\item[] $\reg[Sync]{\Ss{\c{e_1\Spar e_2,s}}{\c{e_1'\Spar e_2',s}}}{\Ss[\Asnd{c}{v}]{\c{e_1,s}}{\c{e_1',s}} \si \Ss[\Arcv{c}{v}]{\c{e_2,s}}{\c{e_2',s}}}{}$
+\item[] $\reg[Sync']{\Ss{\c{e_1\Spar e_2,s}}{\c{e_1'\Spar e_2',s}}}{\Ss[\Arcv{c}{v}]{\c{e_1,s}}{\c{e_1',s}} \si \Ss[\Asnd{c}{v}]{\c{e_2,s}}{\c{e_2',s}}}{}$
+\item Observați că pasul are loc \structure{doar dacă} valoarea estimată în acțiunea $\Arcv{c}{v}$ este aceeași cu cea emisă în acțiunea $\Asnd{c}{v}$.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Comunicare asincronă}{Reguli specifice}
+Structura $C$ asociată canalelor este o funcție parțială de la nume de canale la conținutul curent al cozii de mesaje, simbolizat ca un cuvânt peste alfabetul dat de mulțimea valorilor.
+\begin{itemize}
+\item Un canal nou e acceptat doar dacă nu a mai fost deja folosit:
+\item[] $\reg[aNew]{\Ss{\c{e,s,C}}{\c{e',s',C\cup \{c\mapsto \epsilon\}}}}{\Ss[\Anew{c}]{\c{e,s}}{\c{e',s'}}}{c\not\in \{\Scin,\Scout\}\cup \Dom C}$
+\item Send adaugă valoarea la coada zonei tampon
+\item[] $\reg[aSnd]{\Ss{\c{e,s,C}}{\c{e',s,C'}}}{\Ss[\Asnd{c}{v}]{\c{e,s}}{\c{e',s}} }{w = C[c] \wedge C' = C[c\mapsto w v]}$
+\item Receive primește prima valoare din zona tampon.
+\item[] $\reg[aRcv]{\Ss{\c{e,s,C}}{\c{e',s,C'}}}{\Ss[\Arcv{c}{v}]{\c{e,s}}{\c{e',s}}}{v w = C[c] \wedge C' = C[c\mapsto w]}$
+\item  Observați că pasul are loc \structure{doar dacă} valoarea estimată în acțiunea $\Arcv{c}{v}$ este chiar cea din vârful zonei tampon corespunzătoare lui $c$.
+\end{itemize}
+\end{frame}
+
+
+
+\end{subsection}
+\end{section}
+
+\end{document}

@@ -1,0 +1,454 @@
+\documentclass[xcolor=pdftex,romanian,colorlinks]{beamer}
+
+\usepackage{../tslides}
+\usepackage[all]{xy}
+
+\title[SLP---IMP]{Semantică operațională}
+\subtitle{Limbajul IMP} \begin{document}
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{section}{IMP}
+\begin{frame}[fragile]{Limbajul IMP}
+IMP este un limbaj \structure{IMP}erativ foarte simplu.
+\begin{block}{Ce conține}
+\begin{minipage}{.49\columnwidth}
+\begin{itemize}
+\vitem Operații aritmetice
+\begin{itemize}
+  \item Adunare%\hfill $x + 3$
+  \item Comparare%\hfill $\Snot(x > 7)$
+\end{itemize}
+\vitem Operații cu memoria
+\begin{itemize}
+  \item Dereferențiere%\hfill $x + 3$
+  \item Atribuire%\hfill $\Snot(x > 7)$
+\end{itemize}
+\vitem Instrucțiuni
+\begin{itemize}
+  \item Instrucțiunea vidă
+  \item Compunere secvențială%\hfill $x = 5;$ 
+  \item Instrucțiuni condiționale%\hfill $\Sif(x > 7)\; \{x =5; \} \Selse \{x = 0;\}$
+  \item Instrucțiuni de ciclare  %\hfill$\Swhile (x > 7)\; \{x = x - 1;\}$
+\end{itemize}
+\end{itemize}
+\end{minipage}
+\begin{minipage}{.49\columnwidth}
+\begin{asciic}
+ l2 := 0 ;
+ while (0 <= !l1)  do 
+   (l2 := !l2 + !l1 ;
+    l1 := !l1 + -1
+   )
+\end{asciic}
+Unde starea inițială a memoriei este $\{l_1\mapsto 3, l_2\mapsto 0\}$.
+\end{minipage}
+\end{block}
+\end{frame}
+
+\begin{frame}{Sintaxa limbajului IMP}{Backus Naur Form}
+\begin{syntaxBlock}{\Exp}
+\alert{
+\begin{itemize}
+\item[]\renewcommand{\syntaxKeyword}{}
+\syntax{\Int\Smid\Bool \Smid {\Exp}\op {\Exp} \Smid\Sif\Exp\Sthen \Exp\Selse\Exp  }{}
+\syntaxCont{\terminal{!}\Loc \Smid \Loc \terminal{:=} \Exp}{}
+\syntaxCont{\Sskip \Smid  \Exp\terminal{;}\Exp \Smid \Swhile \Exp\Sdo \Exp \Sdone}{}
+%\syntaxCont{\structure{x}\Smid \lambda \structure{x}.\Exp\Smid \Exp \mathrel{} \Exp}{}
+\item[]\renewcommand{\defSort}{\Loc}
+\syntax{\mbox{locație de memorie ($\mathbb{L} = \{l,l_0,l_1,l_2,\ldots\}$)}}{} 
+\\
+\renewcommand{\defSort}{\Int}
+\syntax{\mbox{număr întreg ($\mathbb{Z} = \{\ldots,-2,-1,0,1,2,\ldots\}$)}}{}
+\\
+\renewcommand{\defSort}{\Bool}
+\syntax{\mbox{valoare de adevăr ($\mathbb{B} = \{\Strue, \Sfalse\}$)}}{}
+\\
+\renewcommand{\defSort}{\op}
+\syntax{\mbox{operație binară ($+,\leq$)}}{}
+%\renewcommand{\defSort}{\bop}
+%\syntax{\mbox{operație binară cu rezultat boolean}}{}
+%\renewcommand{\defSort}{\structure{x}}
+%\syntax{\mbox{\alert{variabilă dintr-o mulțime infinită}}}{}
+\end{itemize}
+}
+\end{syntaxBlock}
+\end{frame}
+
+
+ \begin{frame}{Backus Naur Form}
+  \begin{itemize}
+   \item Pentru gramatici (generative) independente de context
+   \item Producții
+       --- generează termeni prin expandare (rescriere)
+
+\alert{\renewcommand{\syntaxKeyword}{}\syntax[\Exp]{\color{black}\Sif\;\Exp\Sthen\Exp\Selse\Exp}{}
+	\syntaxCont[\Stmt]{\color{black}\Loc \terminal{:=}\Exp}{}}
+   \item Categorii sintactice (neterminale) 
+   \begin{itemize}
+    \item descriu tipurile de sintaxă
+     \begin{itemize}
+      \item Tipuri lexicale: 
+		întregi (\structure{n}), booleeni (\structure{b}), locații (\structure{l}),\\
+		simboluri de operații (\structure{op})
+	  \item Tipuri construite: expresii ($\Exp$)
+     %$\AExp$ (expr. aritmetice), $\BExp$ (expr. Booleene), \\$\Stmt$ (instrucțiuni), $\Block$ (bloc de instrucțiuni), $\Pgm$ (program)
+     \end{itemize}
+   \end{itemize}
+   \item Cuvinte cheie (terminale)
+   \begin{itemize}
+    \item descriu elementele lexicale: 
+   $\Sif$, $\Sthen$, $\Selse$,  
+   $\Swhile$, $\Sdo$,
+   $\terminal{:=}$, $\terminal{!}$, $\terminal{;}$ \ldots
+   \end{itemize}
+  \end{itemize}
+ \end{frame}
+
+
+\end{section}
+
+
+\begin{section}{Sisteme de tranziție}
+\begin{frame}{Sisteme de tranziție}{}
+\begin{block}{Definiție (Sistem de tranziție)}
+Un sistem de tranziție este dat de 
+\begin{itemize}
+\item O mulțime \structure{Config} a configurațiilor (a stărilor)
+\item O relație „de tranziție“ $\structure{\rightarrow} \subseteq {\it Config} \times {\it Config}$
+\end{itemize}
+Dacă $(c,c') \in {\rightarrow}$ scriem $c \rightarrow c'$ și citim 
+%
+$c$ \structure{se poate transforma}  în $c'$ (direct)
+\end{block}
+
+\begin{block}{Exemplu: evaluarea expresiilor întregi}
+\begin{itemize}
+\item \structure{Config} e mulțimea expresiilor pe numere întregi cu operații $+$ și $*$
+\item  $\structure{\rightarrow}$ descrie un pas de evaluare
+\item<2> $(3+5)*(7+3) \rightarrow 8*(7+3)\rightarrow 8*10 \rightarrow 80$
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}{Definiții derivate}
+\begin{description}
+\vitem[$\rightarrow^\ast$] $c \rightarrow^\ast c'$ dacă $c$ se transformă în $c'$ in zero, unul, sau mai mulți pași (închiderea reflexiv-tranzitivă a relației $\rightarrow$)
+
+$(3+5)*(7+3)  \rightarrow^\ast 8*10$
+\vitem[$\not\rightarrow$] $c \not\rightarrow$ dacă $c$ nu se mai poate transforma în nimic
+
+$80 \not\rightarrow$, dar și $3/0\not\rightarrow$
+\vitem[$\rightarrow^!$] $c \rightarrow^! c'$ dacă $c\rightarrow^\ast c'$ și $c'\not\rightarrow$, adică $c'$ nu se mai poate transforma 
+
+$(3+5)*(7+3)  \rightarrow^! 80$
+\vitem[Determinism] Un sistem se numește puternic  determinist dacă relația $\rightarrow$ e injectivă:
+\(\forall c, c_1, c_2\in {\it Config},  c \rightarrow c_1 \wedge c \rightarrow c_2 \implies c_1 = c_2\)
+Un sistem se numește determinist dacă relația $\rightarrow^!$ e injectivă.
+
+Evaluarea expresiilor e deterministă, dar nu tare deterministă.
+
+$(3+5)*(7+3) \rightarrow 8*(7+3)$ și $(3+5)*(7+3) \rightarrow (3+5)*10$
+\end{description}
+\end{frame}
+
+\end{section}
+
+\begin{section}{Semantica tranzițională}
+\begin{frame}{Semantica tranzițională}{}
+\begin{itemize}
+\item Introdusă în 1981 de Gordon Plotkin cu numele de 
+
+\hfill  \structure{S}emantică \structure{O}perațională \structure{S}tructurală (SOS) \hfill \;
+\item Denumiri alternative: 
+
+\hfill „semantica pașilor mici”, „semantică prin reducere"\hfill \;
+\item Definește cel mai mic pas de execuție 
+\item Relație „de tranziție” între configurații definită recursiv prin reguli:
+$$\Ss{\c{{\it Cod}, {\it Stare}}}{\c{{\it Cod'}, {\it Stare'}}}$$
+\item Fiecare pas de execuție este concluzia unei demonstrații
+\item Execuția se obține ca o succesiune de astfel de tranziții:
+
+$\begin{array}{l}
+\c{l \terminal{:=} \alert{\terminal{!} l} \terminal{+} 1,\{l \mapsto 0\}}
+\longrightarrow
+\c{l \terminal{:=} \alert{0 \terminal{+} 1},\{l \mapsto 0\}}
+\longrightarrow
+\\
+\c{\alert{l \terminal{:=} 1},\{l \mapsto 0\}}
+\longrightarrow
+\c{\Sskip,\{l \mapsto 1\}}\not\rightarrow
+\end{array}$
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Configurații finale și configurații blocate}
+
+\begin{block}{Scopul semanticii tranziționale}
+Să descrie execuțiile posibile ca transformări ale programului și memoriei, pas cu pas, dintr-o configurație inițială într-una \structure{finală} (sau \alert{blocată}).
+\end{block}
+
+\begin{block}{Configurații finale}
+Sunt configurații care conțin valori ca fragmente de program:
+
+\hfill $\c{n, \stare}$\hfill $\c{\Strue, \stare}$\hfill $\c{\Sfalse,\stare}$\hfill $\c{\Sskip,\stare}$\hfill\;
+\end{block}
+
+\begin{alertblock}{Configurații blocate}
+Sunt configurații care nu sunt finale dar care nu mai pot tranziționa
+
+\onslide<2>
+\hfill $\c{5 \leq {3 + {\alert{\terminal{!} l_0}}}, \{l_1\mapsto 2\}}$ \hfill $\c{\Sif \alert{0} \Sthen e_1 \Selse e_2,\stare}$ \hfill $\c{\alert{3 / 0}, \stare}$ \hfill\;
+\end{alertblock}
+
+\end{frame}
+
+
+\begin{frame}{Starea memoriei}
+\begin{block}{}
+Starea memoriei unui program IMP la un moment dat este dată de valorile deținute în acel moment de locațiile folosite în program.
+
+\structure{Matematic:} o funcție \alert{parțială} $s : \mathbb{L} \xrightarrow{\circ}\mathbb{Z}$ de domeniu finit.
+\end{block}
+\begin{block}{Notații}
+\begin{itemize}
+\item Descrierea funcției prin enumerare:
+$s = \{ l_1 \mapsto 10, l_5 \mapsto 0\}$
+\item Funcția vidă $\emptyset$, nedefinită pentru nici o variabilă
+\item Obținerea valorii unei variabile: $s(x)$
+\item Suprascrierea valorii unei variabile:
+
+$$s[l\mapsto n] (l') = \left\{\begin{array}{r@{\mbox{, dacă }}l}
+s	(l') & l' \neq l \\
+n & l' = l
+\end{array}
+\right.$$
+\end{itemize}
+\end{block}
+\end{frame}
+
+
+\begin{frame}{Redex. Reguli structurale. Axiome}
+\begin{block}{\alert{Ex}presie \alert{red}uctibilă --- \alert{redex}}
+Reprezintă fragmentul de sintaxă care va fi modificat la următorul pas.
+
+\hfill$\Sif 0 \terminal{<=} 5 \terminal{+} (7 \terminal{*} \alert<2->{\terminal{!} l_1}) \Sthen  l_2 \terminal{:=}1 \Selse l_2 \terminal{:=}0 $\hfill\ 
+\end{block}
+
+\begin{block}{Reguli structurale --- Folosesc la identificarea următorului redex}
+\begin{itemize}
+\item Definite recursiv pe structura termenilor
+\end{itemize}
+\onslide<3->{
+$$\reg{
+ \Ss{\c{\Sif  \alert{e} \Sthen e_1 \Selse e_2,\stare}}{\c{\Sif \structure{e'} \Sthen e_1 \Selse e_2,\structure{\stare'}}}
+}{
+  \Ss{\c{e,\stare}}{\c{e',\stare'}}
+}
+{}$$
+}
+\end{block}
+\begin{block}{Axiome --- Realizează pasul computațional}
+\onslide<4>{$$\reg{\Ss{\c{\Sif  {\terminal{true}} \Sthen e_1 \Selse e_2,\stare}}{\c{e_1,\stare}}}{}{}$$} 
+\end{block}
+\end{frame}
+
+\end{section}
+
+
+
+\begin{section}{Reguli pentru semantica lui IMP}
+\begin{frame}{Expresii aritmetice}
+\begin{itemize}
+%\item[] {\color{black!10}$\reg[Int]{\Ss{\c{i,\stare}}{\c{i,\stare}}}{}{}$}
+
+\item Axiomele efectuează operația în domeniu
+\vitem[] $\reg[Op+]{\Ss{\c{n_1 + n_2,\stare}}{\c{n,\stare}}}{}{n = n_1 + n_2}$
+\vitem[] $\reg[Op$\leq$]{\Ss{\c{n_1 \terminal{<=} n_2,\stare}}{\c{b,\stare}}}{}{b = (n_1 \leq n_2)}$
+
+\vitem Regulile structurale descriu ordinea evaluării argumentelor
+
+\vitem[] $\reg[OpS]{\Ss{\c{e_1 \mathrel{op} e_2,\stare}}{\c{e_1' \mathrel{op} e_2,\stare'}}}{\Ss{\c{e_1,\stare}}{\c{e_1',\stare'}}}{}$
+\vitem[] $\reg[OpD]{\Ss{\c{n_1 \mathrel{op} e_2,\stare}}{\c{n_1 \mathrel{op} e_2',\stare'}}}{\Ss{\c{e_2,\stare}}{\c{e_2',\stare'}}}{}$
+
+
+%
+%\vitem Axioma efectuează operația din domeniu 
+%\vitem[] $\reg[Op]{\Ss{\c{n_1 \mathrel{op} n_2,\stare}}{\c{v,\stare}}}{}{v = n_1 \mathrel{o} n_2}$
+\end{itemize}
+\end{frame}
+\begin{frame}{Exemplu}
+\begin{block}{Exercițiu}
+Folosind regulile semantice de mai sus, găsiți configurația finală pentru $\c{(3 +5)+(7+9),\emptyset}$.
+\end{block}
+\onslide<2>
+\begin{itemize}
+\vitem[] $\reg[OpS]{\Ss{\c{(3 +5)+(7+9),\emptyset}}{\c{8 + (7 +9),\emptyset}}}{\reg[Op+]{\Ss{\c{3 + 5,\emptyset}}{\c{8,\emptyset}}}{\done}{}}{}$
+\vitem[] $\reg[OpD]{\Ss{\c{8+(7+9),\emptyset}}{\c{8 + 16,\emptyset}}}{\reg[Op+]{\Ss{\c{7 + 9,\emptyset}}{\c{16,\emptyset}}}{\done}{}}{}$
+\vitem[] $\reg[Op+]{\Ss{\c{8 + 16,\emptyset}}{\c{24,\emptyset}}}{\done}{}$
+\end{itemize}
+\end{frame}
+%\begin{frame}{Semantica SOS a lui IMP}
+%{Ordine de evaluare. Împărțire}
+%\begin{block}{Semantica împărțirii} 
+%Evaluăm al doilea argument, și dacă e diferit de 0, atunci evaluăm si primul argument și apoi împărțirea.
+%\end{block}
+%\begin{itemize}
+%\item[] $\reg{\Ss{\c{a_1 / a_2,\stare}}{\c{a_1 / a_2',\stare}}}{\Ss{\c{a_2,\stare}}{\c{a_2',\stare}}}{}$
+%\vitem[] $\reg{\Ss{\c{a_1 / i_2,\stare}}{\c{a_1' / i_2,\stare}}}{\Ss{\c{a_1,\stare}}{\c{a_1',\stare}}}{i_2 \neq 0}$
+%\vitem Evaluarea argumentelor de la dreapta la stânga
+%\vitem[] $\reg[Div]{\Ss{\c{i_1 / i_2,\stare}}{\c{i,\stare}}}{}{i_2\neq 9, i = i_1 / i_2}$
+%\end{itemize}
+%\end{frame}
+%\begin{frame}{Semantica SOS a lui IMP}
+%{Expresii Booleene. Constante și operatorul de comparație.}
+%\begin{itemize}
+%\item Constantele Booleene sunt valori --- nu pot fi redex
+%\vitem[] $\reg{\Ss{\c{a_1 \terminal{<=} a_2,\stare}}{\c{a_1' \terminal{<=} a_2,\stare}}}{\Ss{\c{a_1,\stare}}{\c{a_1',\stare}}}{}$\hfill$\reg{\Ss{\c{a_1 \terminal{<=} a_2,\stare}}{\c{a_1 \terminal{<=} a_2',\stare}}}{\Ss{\c{a_2,\stare}}{\c{a_2',\stare}}}{}$
+%\vitem[] $\reg[Leq-false]{\Ss{\c{i_1 \terminal{<=} i_2,\stare}}{\c{\terminal{false},\stare}}}{}{i_1 > i_2}$
+%\vitem[] $\reg[Leq-true]{\Ss{\c{i_1 \terminal{<=} i_2,\stare}}{\c{\terminal{true},\stare}}}{}{i_1 \leq i_2}$
+%\end{itemize}
+%\end{frame}
+%\begin{frame}{Semantica SOS a lui IMP}
+%{Expresii Booleene. Negația logică}
+%\begin{itemize}
+%\item[] $\reg{\Ss{\c{\terminal{!} a,\stare}}{\c{\terminal{!} a',\stare}}}{\Ss{\c{a,\stare}}{\c{a',\stare}}}{}$
+%\vitem[] $\reg[!-true]{\Ss{\c{\terminal{!} \terminal{true},\stare}}{\c{\terminal{false},\stare}}}{}{}$
+%\vitem[] $\reg[!-false]{\Ss{\c{\terminal{!} \terminal{false},\stare}}{\c{\terminal{true},\stare}}}{}{}$
+%\end{itemize}
+%\end{frame}
+%\begin{frame}{Semantica SOS a lui IMP}
+%{Expresii Booleene. Și-ul logic}
+%\begin{itemize}
+%\item[] $\reg{\Ss{\c{b_1 \terminal{\&\&} b_2,\stare}}{\c{b_1' \terminal{\&\&} b_2,\stare}}}{\Ss{\c{b_1,\stare}}{\c{b_1',\stare}}}{}$
+%\vitem[] $\reg[\&\&-false]{\Ss{\c{\terminal{false}\; \terminal{\&\&} b_2,\stare}}{\c{\terminal{false},\stare}}}{}{}$
+%\vitem[] $\reg[\&\&-true]{\Ss{\c{\terminal{true}\; \terminal{\&\&} b_2,\stare}}{\c{b_2,\stare}}}{}{}$
+%\end{itemize}
+%\end{frame}
+\begin{frame}{Programare „imperativă“}
+\begin{itemize}
+\item[]\structure{Operații cu memoria}
+\begin{itemize}
+\item[] $\reg[Loc]{\Ss{\c{\terminal{!} l,\stare}}{\c{n, \stare}}}{}{l\in\Dom(\stare), n = \stare(l)}$
+\vitem[] $\reg[Atrib]{\Ss{\c{l \terminal{:=} n,\stare}}{\c{\Sskip,\stare[l \mapsto n]}}}{}{l\in\Dom(\stare)}$
+\vitem[] $\reg[AtribD]{\Ss{\c{l \terminal{:=} e ,\stare}}{\c{l \terminal{:=} e' ,\stare'}}}{\Ss{\c{e,\stare}}{\c{e',\stare'}}}{}$
+\end{itemize}
+\vitem[]\structure{Compunerea secvențială}
+\begin{itemize}
+\item[] $\reg[Secv]{\Ss{\c{\Sskip \terminal{;} e_2,\stare}}{\c{e_2,\stare}}}{}{}$
+\vitem[] $\reg[SecvS]{\Ss{\c{e_1 \terminal{;} e_2},\stare}{\c{e_1' \terminal{;} e_2,\stare'}}}{\Ss{\c{e_1,\stare}}{\c{e_1',\stare'}}}{}$
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Exemple}
+\begin{itemize}
+\item$\c{l\terminal{:=}7 \terminal{;} !l, \{l\mapsto 5\}} \xrightarrow[SecvS]{Atrib}  \c{\Sskip \terminal{;} !l, \{l\mapsto 7\}} \xrightarrow{Secv} \c{!l, \{l\mapsto 7\}}  \xrightarrow{Loc} \c{7, \{l\mapsto 7\}} $
+\vitem $\c{l\terminal{:=}7 \terminal{;} l \terminal{:=} !l, \{l\mapsto 5\}} \longrightarrow $?
+\vitem $\c{15 + !l, \emptyset} \longrightarrow $?
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Instrucțiunile condiționale și de ciclare}
+\begin{itemize}
+\item[]
+$\reg[IfTrue]{\Ss{\c{\Sif  {\terminal{true}} \Sthen e_1 \Selse e_2,\stare}}{\c{e_1,\stare}}}{}{}$ 
+\vitem[]
+$\reg[IfFalse]{\Ss{\c{\Sif {\terminal{false}} \Sthen e_1 \Selse e_2,\stare}}{\c{e_2,\stare}}}{}{}$ 
+\vitem[] 
+$\reg[IfS]{
+ \Ss{\c{\Sif {e} \Sthen e_1 \Selse e_2,\stare}}{\c{\Sif  {e'} \Sthen e_1 \Selse e_2,\stare'}}
+}{
+  \Ss{\c{e,\stare}}{\c{e',\stare'}}
+}
+{}$
+
+\vitem[]$\reg[While]{\Ss{\c{\Swhile {e_1} \Sdo e_2 \Sdone{},\stare}}{}}{}
+{}$
+
+\hfill $\c{\Sif {e_1} \Sthen (e_2\terminal{;} {\Swhile {e_1} \Sdo e_2 \Sdone}) \Selse  {\Sskip},\stare}$
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Exemplu}
+\begin{block}{Exercițiu}
+\begin{tabular}{rl}
+Dacă & $e =  \Swhile 1 \terminal{<=} !l_1  \Sdo 
+   {l_2 \terminal{:=} !l_2 \terminal{+} !l_1} \terminal{;}
+   {l_1 \terminal{:=} !l_1 \terminal{+} -1} \Sdone{}
+   $ 
+\\ 
+și &
+$\stare = \{l_1\mapsto 3, l_2\mapsto 0\}$\\
+atunci & $\c{e, \stare}\longrightarrow $?
+\end{tabular}
+\end{block}
+\end{frame}
+
+\begin{frame}
+{Execuție pas cu pas}
+
+{\small
+$\hspace{-1em}\begin{array}{lr}
+\c{\alert<2->{\Swhile 0 \terminal{<=} {\terminal{!} l}\Sdo l \terminal{:=} {\terminal{!} l} \terminal{+} -4 } \Sdone{},\{l \mapsto 3\}}
+\onslide<2->&\xrightarrow{\textsc{While}}\\
+\c{\Sif 0 \terminal{<=} \alert<3->{\terminal{!} l}\begin{array}[t]{l@{\;}l} \Sthen& (l \terminal{:=} {\terminal{!} l} \terminal{+} -4 \terminal{;} \\& \Swhile 0 \terminal{<=} {\terminal{!} l}\Sdo l \terminal{:=} {\terminal{!} l} \terminal{+} -4  \Sdone{}) \\ \Selse &  \Sskip\end{array},\{l \mapsto 3\}}
+\onslide<3->
+&\xrightarrow[\textsc{IfS, OpD}]{\textsc{Loc}}\\
+\c{\Sif \alert<4->{0 \terminal{<=} 3}\begin{array}[t]{l@{\;}l} \Sthen& (l \terminal{:=} {\terminal{!} l} \terminal{+}  -4 \terminal{;} \\& \Swhile 0 \terminal{<=}  {\terminal{!} l}\Sdo l \terminal{:=} {\terminal{!} l} \terminal{+} -4)   \Sdone{}\\ \Selse &\Sskip\end{array},\{l \mapsto 3\}}
+\onslide<4->
+&\xrightarrow[{\textsc{IfS}}]{\textsc{Op$\leq$}}\\
+\c{\alert<5->{\Sif  {\Strue} \begin{array}[t]{l@{\;}l} \Sthen&  (l \terminal{:=} {\terminal{!}l} \terminal{+} -4 \terminal{;} \\ & \Swhile 0 \terminal{<=} {\terminal{!} l}\Sdo l \terminal{:=}  {\terminal{!} l} \terminal{+} 4)  \Sdone{}\\ \Selse & \Sskip\end{array}},\{l \mapsto 3\}}
+\onslide<5->
+&\xrightarrow{\textsc{IfTrue}}\\
+\c{ l \terminal{:=} \alert<6->{ {\terminal{!} l}} \terminal{+} -4 \terminal{;} \Swhile 0 \terminal{<=}  {\terminal{!} l} \Sdo l \terminal{:=}  {\terminal{!} l} \terminal{+} -4   \Sdone{},\{l \mapsto 3\}}
+\onslide<6->
+&\xrightarrow[SecvS,AtribD,OpS]{\textsc{Loc}}\\
+\c{l \terminal{:=} \alert<7->{3 \terminal{+} -4} \terminal{;}  \Swhile 0 \terminal{<=}  {\terminal{!} l}\Sdo  l \terminal{:=}  {\terminal{!} l} \terminal{+} -4   \Sdone{},\{l \mapsto 3\}}
+\onslide<7->
+&\xrightarrow[\textsc{SecvS, AtribD}]{\textsc{Op+}}\\
+\end{array}$}
+\end{frame}
+\begin{frame}{Execuție pas cu pas}{}
+
+$\hspace{-1em}\begin{array}{lr}
+\c{\alert<2->{ l \terminal{:=} -1} \terminal{;}  \Swhile 0 \terminal{<=}  {\terminal{!} l} \Sdo  l \terminal{:=}  {\terminal{!} l}  \terminal{+} -4   \Sdone{},\{l \mapsto 3\}}
+\onslide<2->
+&\xrightarrow[\textsc{SecvS}]{\textsc{Atrib}}\\
+\c{\alert<3->{\Sskip \terminal{;} \Swhile 0 \terminal{<=}  {\terminal{!} l} \Sdo l \terminal{:=}  {\terminal{!} l}  \terminal{+} -4  \Sdone{}} ,\{ l \mapsto -1\}}
+\onslide<3->
+&\xrightarrow{\textsc{Secv}}\\
+\c{\alert<4->{\Swhile (0 \terminal{<=}  {\terminal{!} l} )\Sdo l \terminal{:=}  {\terminal{!} l}  \terminal{+} -4   \Sdone{} },\{l \mapsto -1\}}
+\onslide<4->
+&\xrightarrow{\textsc{While}}\\
+\c{\Sif 0 \terminal{<=} \alert<5->{\terminal{!} l}\begin{array}[t]{l@{\;}l} \Sthen& l \terminal{:=} {\terminal{!} l} \terminal{+} -4 \terminal{;} \\& \Swhile 0 \terminal{<=} {\terminal{!} l}\Sdo l \terminal{:=} {\terminal{!} l} \terminal{+} -4    \Sdone{} \\ \Selse &  \Sskip\end{array},\{l \mapsto -1\}}
+\onslide<5->
+&\xrightarrow[\textsc{IfS,OpD}]{\textsc{Loc}}\\
+\c{\Sif \alert<6->{0 \terminal{<=} -1}\begin{array}[t]{l@{\;}l} \Sthen& l \terminal{:=} {\terminal{!} l} \terminal{+}  -4 \terminal{;} \\& \Swhile 0 \terminal{<=}  {\terminal{!} l}\Sdo l \terminal{:=} {\terminal{!} l} \terminal{+} -4   \Sdone{}\\ \Selse &\Sskip\end{array},\{l \mapsto -1\}}
+\onslide<6->
+&\xrightarrow[\textsc{IfS}]{\textsc{Op$\leq$}}\\
+\c{\alert<7->{\Sif  {\Sfalse} \begin{array}[t]{l@{\;}l} \Sthen&  l \terminal{:=} {\terminal{!}l} \terminal{+} -4 \terminal{;} \\ & \Swhile 0 \terminal{<=} {\terminal{!} l}\Sdo l \terminal{:=}  {\terminal{!} l} \terminal{+} 4   \Sdone{}\\ \Selse & \Sskip\end{array}},\{l \mapsto -1\}}
+\onslide<7>
+&\xrightarrow{\textsc{IfFalse}}\\
+\c{\Sskip,\{l \mapsto -1\}}
+\end{array}$
+\end{frame}
+
+
+\begin{frame}{Determinism}
+\begin{theorem}
+Limbajul IMP este puternic determinist, adică,  dacă $\Ss{\c{e,\stare}}{\c{e_1,\stare_1}}$ și $\Ss{\c{e,\stare}}{\c{e_2,\stare_2}}$, atunci $e_1 = e_2$ și $\stare_1 = \stare_2$.
+\end{theorem}
+\begin{block}{Demonstrație}
+\onslide<2> Va urma \ldots
+\end{block}
+\end{frame}
+\end{section}
+
+
+\end{document}
+
+
+
