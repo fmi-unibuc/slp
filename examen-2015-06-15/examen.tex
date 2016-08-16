@@ -1,7 +1,7 @@
 \documentclass[addpoints,12pt,a4paper,answers]{exam}
 %
 \usepackage[none]{hyphenat} \usepackage{fullpage}
-\usepackage{../../tdefinition}
+\usepackage{../tdefinition}
 %\usepackage{fancyhdr}
 %\pagestyle{fancy}
 %\lhead{}
@@ -18,7 +18,7 @@
 %\setbox0=\vbox{#1}
 %\height=\ht0 \advance\height by \dp0
 %\vspace*{1.1\height}
-%#1%
+#1%
 }
 
 \newenvironment{solutie}{\par\hspace*{-9em}\begin{minipage}{.98\paperwidth}
@@ -104,7 +104,7 @@ Fie $e$ expresia:
 
 \part[3] Demonstrați că există un tip $T$ astfel încât $\vdash e : T$.
 
-\getHeight{
+%\getHeight{
 \begin{solutie}(0,15p/prima folosire a unei reguli; 0,05p pentru următoarele)
 
 Fie $t=\{c:{\Sbool}; r:\{\}\} \rightarrow \{\}$
@@ -173,11 +173,11 @@ Fie $t=\{c:{\Sbool}; r:\{\}\} \rightarrow \{\}$
 \)
 
 \end{solutie}
-}
+%}
 
 \part[1] Scrieți arborii de demonstrație pentru fiecare pas din execuția strictă a expresiei $e$ din configurația inițială $\c{e,\emptyset}$ până la o configurație finală.
 
-\getHeight{
+%\getHeight{
 \begin{solutie}
 (0,15p/primii doi pași; 0,2p al treilea)
 
@@ -201,7 +201,7 @@ Fie $t=\{c:{\Sbool}; r:\{\}\} \rightarrow \{\}$
 \)
 
 \end{solutie}
-}
+%}
 
 \end{parts}
 %\newpage
@@ -217,51 +217,51 @@ Vrem să adăugam la limbajul IMP liste.  Mai precis, vrem să adăugăm:
 \end{itemize}
 \begin{parts}
 \part[1\half] {\bf Semantică. } Scrieți regulile de deducție SOS (6) pentru execuția programelor folosind liste 
-\getHeight{
+%\getHeight{
 \begin{solutie}
 (0,25p/regulă)
 
 \[
 \reg[SwitchS]{
-\\textit{Ss}
+\Ss
 {\c{\terminal{switch}(e)\{\terminal{case} v_1: e_1; \terminal{case} v_2: e_2; \terminal{default:} d\},s}}
 {\c{\terminal{switch}(e')\{\terminal{case} v_1: e_1; \terminal{case} v_2: e_2; \terminal{default:} d\},s'}}
 }{
-\\textit{Ss}
+\Ss
 {\c{e,s}}
 {\c{e',s'}}
 }{}
 \]
 \[
 \reg[Switch1]{
-\\textit{Ss}
+\Ss
 {\c{\terminal{switch}(v)\{\terminal{case} v_1: e_1; \terminal{case} v_2: e_2; \terminal{default:} d\},s}}
 {\c{e_1,s}}}{}{v=v_1}
 \]
 \[
 \reg[Switch2]{
-\\textit{Ss}
+\Ss
 {\c{\terminal{switch}(v)\{\terminal{case} v_1: e_1; \terminal{case} v_2: e_2; \terminal{default:} d\},s}}
 {\c{e_2,s}}}{}{v\neq v_1, v = v_2}
 \]
 \[
 \reg[Switch3]{
-\\textit{Ss}
+\Ss
 {\c{\terminal{switch}(v)\{\terminal{case} v_1: e_1; \terminal{case} v_2: e_2; \terminal{default:} d\},s}}
 {\c{d,s}}}{}{v\neq v_1, v \neq v_2}
 \]
 \end{solutie}
-}
+%}
 \part[1] {\bf Tipuri. } Scrieți regulile de tipuri (4) pentru programe cu liste
-\getHeight{
+%\getHeight{
 \begin{solutie}
 (0,2p/câte au tipul la fel ca e sau câte au tipul la fel ca rezultatul)
 
 \[\reg[tSwitch]{\tjud{\terminal{switch}(e)\{\terminal{case} v_1: e_1; \terminal{case} v_2: e_2; \terminal{default:} d\}}{T'}}{\tjud{e}{T}\si\tjud{v_1}{T}\si\tjud{e_1}{T'}\si\tjud{v_2}{T}\si\tjud{e_2}{T'}\si\tjud{d}{T'}}{}\]
 \end{solutie}
-}
+%}
 \part[1\half] {\bf Siguranță. } Arătați că sistemul de tranziție IMP+LISTE are proprietatea de conservare a tipurilor (demonstrație), dar nu are proprietatea de progres (contraexemplu).
-\getHeight{
+%\getHeight{
 \begin{solutie}
 
 Presupun proprietatea e adevărată pentru toate premizele regulii {\sc tSwitch} și o demonstrez pentru concluzia ei:
@@ -271,10 +271,10 @@ Presupun proprietatea e adevărată pentru toate premizele regulii {\sc tSwitch}
 (0,6)Dacă $e$ este valoare: dacă $e=v_1$ atunci aplicăm regula {\sc Switch1}; altfel, dacă $e=v_2$ aplicăm regula {\sc Switch2}; alftel aplicăm regula {\sc Switch3}.
 
 (0,2)Dacă $e$ nu este valoare, din ipoteza de inducție, există $e'$,$s'$ astfel încât
-$\\textit{Ss}{\c{e,s}}{\c{e',s'}}$.  Putem deci aplica regula {\sc SwitchS}.
+$\Ss{\c{e,s}}{\c{e',s'}}$.  Putem deci aplica regula {\sc SwitchS}.
 
 \end{solutie}
-}
+%}
 \end{parts}
 %\newpage
 
@@ -290,7 +290,7 @@ in let rec y : int -> bool = fun (x : int) -> y x
 \part[1] {\bf Variabile. } Subliniați aparițiile libere și indicați legătura fiecărei apariții legate printr-o săgeată către parametrul care o leagă
 
 \part[2] \label{tipFn}{\bf Tipuri. } Demonstrați că există un tip $T$ astfel încât \[\tjud[x:{\Sbool},y:{\Sint}]{e}{T}\]
-\getHeight{
+%\getHeight{
 \begin{solutie}
 (0,15p/ prima aplicare a unei reguli;  pentru fiecare regula din primele 4 nivele, afara de al doilea Fun -> 0,1p)
 \[
@@ -356,30 +356,30 @@ Fie $\Gamma=x:{\Sint}\rightarrow{\Sbool}$
 \]
 
 \end{solutie}
-}
+%}
 %\part[1] {\bf Evaluare. } Efectuați primii 5 pași din evaluarea non-strictă a expresiei $e$. Pentru fiecare pas indicați pe săgeată axioma folosită. Pentru evaluarea non-strictă a expresiilor de tip $\Slet$ folosiți axioma:
-%\[\reg[NSLet]{\\textit{Ss}{\c{\Slet x = e_1 \Sin e_2,s}}{\c{e',s}}}{}{e'=e_2[e_1/x]}\]
-\getHeight{
-\begin{solutie}
-0,25p pe tranziție
-\[\begin{array}{cl}
-&
-\c{\Slet x = {\Sfun (x:{\Sint}) \rightarrow x \terminal{<=} 1} \Sin {\Sif (x\; 3) \Sthen (\Sfun (x:{\Sint}) \rightarrow x) \Selse x},\emptyset}
-\\
-\xrightarrow{\textsc{Let}} &
-\c{\Sif (({\Sfun (x:{\Sint}) \rightarrow x \terminal{<=} 1})\; 3) \Sthen (\Sfun (x:{\Sint}) \rightarrow x) \Selse {\Sfun (x:{\Sint}) \rightarrow x \terminal{<=} 1},\emptyset}
-\\
-\xrightarrow[\textsc{IfS}]{\textsc{App}} &
-\c{\Sif 3 \terminal{<=} 1 \Sthen (\Sfun (x:{\Sint}) \rightarrow x) \Selse {\Sfun (x:{\Sint}) \rightarrow x \terminal{<=} 1},\emptyset}
-\\
-\xrightarrow[\textsc{IfS}]{\textsc{Op}\leq} &
-\c{\Sif {\Sfalse} \Sthen (\Sfun (x:{\Sint}) \rightarrow x) \Selse {\Sfun (x:{\Sint}) \rightarrow x \terminal{<=} 1},\emptyset}
-\\
-\xrightarrow{\textsc{If}} &
-\c{\Sfun (x:{\Sint}) \rightarrow x \terminal{<=} 1,\emptyset}
-\end{array}\]
-\end{solutie}
-}
+%\[\reg[NSLet]{\Ss{\c{\Slet x = e_1 \Sin e_2,s}}{\c{e',s}}}{}{e'=e_2[e_1/x]}\]
+%\getHeight{
+%\begin{solutie}
+%0,25p pe tranziție
+%\[\begin{array}{cl}
+%&
+%\c{\Slet x = {\Sfun (x:{\Sint}) \rightarrow x \terminal{<=} 1} \Sin {\Sif (x\; 3) \Sthen (\Sfun (x:{\Sint}) \rightarrow x) \Selse x},\emptyset}
+%\\
+%\xrightarrow{\textsc{Let}} &
+%\c{\Sif (({\Sfun (x:{\Sint}) \rightarrow x \terminal{<=} 1})\; 3) \Sthen (\Sfun (x:{\Sint}) \rightarrow x) \Selse {\Sfun (x:{\Sint}) \rightarrow x \terminal{<=} 1},\emptyset}
+%\\
+%\xrightarrow[\textsc{IfS}]{\textsc{App}} &
+%\c{\Sif 3 \terminal{<=} 1 \Sthen (\Sfun (x:{\Sint}) \rightarrow x) \Selse {\Sfun (x:{\Sint}) \rightarrow x \terminal{<=} 1},\emptyset}
+%\\
+%\xrightarrow[\textsc{IfS}]{\textsc{Op}\leq} &
+%\c{\Sif {\Sfalse} \Sthen (\Sfun (x:{\Sint}) \rightarrow x) \Selse {\Sfun (x:{\Sint}) \rightarrow x \terminal{<=} 1},\emptyset}
+%\\
+%\xrightarrow{\textsc{If}} &
+%\c{\Sfun (x:{\Sint}) \rightarrow x \terminal{<=} 1,\emptyset}
+%\end{array}\]
+%\end{solutie}
+%}
 \end{parts}
 
 \newpage
@@ -415,7 +415,7 @@ Semafoare.  Fie următoarele două definiții ale unui semafor de capacitate 2 �
 \item[Definiția secvențială]
 \[
 \begin{array}{lcl}
-\textit{\textit{Ss}} & =  & j(x). \textit{Ss}_1\\
+\textit{Ss} & =  & j(x). \textit{Ss}_1\\
 \textit{Ss}_1 & = & s(x).\textit{Ss} + j(x).\textit{Ss}_2 \\
 \textit{Ss}_2 & = & s(x).\textit{Ss}_1
 \end{array}
