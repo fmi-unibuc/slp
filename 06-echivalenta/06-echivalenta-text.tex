@@ -1,0 +1,299 @@
+%!TEX root = 06-echivalenta.tex
+
+\begin{section}{Introducere}
+\begin{frame}{Echivalența de cod}
+\begin{block}{Intuiție}
+Două „fragmente“ de cod $p_1$ și $p_2$ sunt \structure{echivalente} dacă „au același efect“.
+\end{block}
+
+\vfill \begin{block}{Utilitate}
+\begin{itemize}
+\item Stabilirea echivalenței este f. utilă în procesul de compilare
+\item Permite înlocuirea unei bucăți de cod cu alta mai „bună“ 
+\end{itemize}
+\end{block}
+
+\end{frame}
+
+
+\begin{frame}{Exemple}
+\begin{itemize}
+\item $C_1 \terminal{;} (C_2 \terminal{;} C_3) \simeq (C_1 \terminal{;} C_2) \terminal{;} C_3$ ?
+\vitem $C_1 \terminal{;} C_2 \simeq C_2 \terminal{;} C_1$ ?
+\vitem $C \terminal{;} {\Sif B \Sthen C_1 \Selse C_2}  \simeq {\Sif B \Sthen (C \terminal{;} C_1) \Selse (C \terminal{;} C_2)}$ ?
+\vitem $({\Sif B \Sthen C_1 \Selse C_2}) \terminal{;} C  \simeq {\Sif B \Sthen (C_1 \terminal{;} C) \Selse (C_2 \terminal{;} C)}$ ?
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}{Echivalență semantică}
+Definițiile semantice ne ajută să 
+\begin{enumerate}
+\item Definim clar/formal noțiunea de echivalență
+\item Analizăm matematic echivalența între bucățile de cod
+\begin{itemize}
+\item Identificarea precisă a condițiilor în care echivalența ține
+\item Demonstrarea echivalenței
+\end{itemize}
+\end{enumerate}
+\end{frame}
+
+\end{section}
+
+
+\begin{section}{Echivalență semantică}
+\begin{frame}{Proprietăți dezirabile ale echivalenței de cod}{Relație de congruență}
+\begin{description}
+\item[Reflexivitate] \hfill $\displaystyle \reg{P \simeq P}{}{}$ \hfill\;
+\vitem[Simetrie] \hfill $\displaystyle \reg{P \simeq P'}{P' \simeq P}{}$ \hfill\;
+\vitem[Tranzitivitate] \hfill $\displaystyle \reg{P \simeq P''}{P \simeq P' \si P' \simeq P''}{}$ \hfill\;
+\vitem[Congruență] \hfill \structure{$\displaystyle \reg{{\cal C}[P] \simeq {\cal C}[P']}{P \simeq P'}{}$} \hfill\;
+\end{description}
+\vfill
+pentru orice $P, P', P''$ fraze de program și $\cal C$ \structure{context}.
+\vfill
+\begin{itemize}
+\item[] \structure{${\cal C}[P]$} —frază de program cu o apariție a lui $P$ evidențiată
+\item[] \structure{${\cal C}[P']$} —aceeași frază în care apariția lui $P$ a fost înlocuită cu $P'$
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Echivalență semantică}
+\begin{block}{Definiție (folosind semantica naturală)}
+Două fraze de același tip (expresie întreagă, expresie booleană, comandă) sunt \structure{echivalente semantic}, notat \structure{$\displaystyle p_1 \simeq p_2$}
+dacă
+\[\S{\c{p_1,\sigma}}{\c{v,\sigma'}} \iff \S{\c{p_2,\sigma}}{\c{v,\sigma'}}\] 
+ pentru orice stare $\sigma$ și orice configurație finală $\c{v,\sigma'}$
+\end{block}
+
+\vfill 
+\begin{block}{Observație}
+Dacă avem un rezultat de corespondență între semantica naturală și cea tranzițională (cum avem pentru limbajul IMP), o definiție echivalentă pentru $p_1\simeq p_2$ este:
+\[{\c{p_1,\sigma}}\longrightarrow^\ast{\c{v,\sigma'}} \iff {\c{p_2,\sigma}}\longrightarrow^\ast{\c{v,\sigma'}}\] 
+
+\end{block}
+
+\end{frame}
+
+\begin{frame}<handout:0|article:0>{Proprietăți demonstrabile pentru semantica tranzitională}
+{Din cursul 5}
+\begin{block}{Determinism}  
+Dacă $\c{p, \sigma}\longrightarrow \c{p_1, \sigma_1}$  și $\c{p, \sigma} \longrightarrow \c{p_2, \sigma_2}$, atunci $p_1 = p_2$ și $\sigma_1 = \sigma_2$
+\end{block}
+
+\vfill
+\begin{block}{Conservarea tipurilor}
+Dacă $\c{p, \sigma}\longrightarrow \c{p', \sigma'}$ atunci $p'$ are același tip cu $p$.
+\end{block}
+
+\vfill
+\begin{block}{Expresiile nu modifică starea}
+Dacă $p$ e expresie întreagă/booleană și $\c{p, \sigma}\longrightarrow \c{p', \sigma'}$ atunci $\sigma=\sigma'$
+\end{block}
+\end{frame}
+
+\begin{frame}{Proprietăți demonstrabile pentru semantica naturală}
+\begin{block}{Determinism}  
+Dacă $\S{\c{p, \sigma}}{\c{v_1, \sigma_1}}$  și $\S{\c{p, \sigma}}{\c{v_2, \sigma_2}}$, atunci $v_1 = v_2$ și $\sigma_1 = \sigma_2$
+\end{block}
+
+\vfill
+\begin{block}{Conservarea tipurilor}
+Dacă $\S{\c{p, \sigma}}{\c{v, \sigma'}}$ atunci $v$ are același tip cu $p$.
+\end{block}
+
+\vfill
+\begin{block}{Expresiile nu modifică starea}
+Dacă $p$ e expresie întreagă/booleană și $\S{\c{p, \sigma}}{\c{v, \sigma'}}$ atunci $\sigma=\sigma'$
+\end{block}
+\end{frame}
+
+
+\begin{frame}{Echivalență semantică pentru limbajul IMP}
+\begin{block}{Echivalența comenzilor} 
+$c_1\simeq c_2 \iff {}$ pentru orice $\sigma$   
+\begin{itemize}
+\item Există $\sigma'$ astfel încât $\S{\c{c_1,\sigma}}{\c{\Sskip, \sigma'}}$ și $\S{\c{c_2,\sigma}}{\c{\Sskip, \sigma'}}$, sau
+\item $\c{c_1,\sigma} \not\Downarrow$ și  $\c{c_2,\sigma} \not\Downarrow$ 
+\end{itemize}
+\end{block}
+\vfill
+\begin{block}{Echivalența expresiilor booleene} 
+$b_1\simeq b_2 \iff {}$ pentru orice $\sigma$   
+\begin{itemize}
+\item Există $t\in\{\Strue, \Sfalse\}$ astfel încât $\S{\c{b_1,\sigma}}{\c{t, \sigma}}$ și $\S{\c{b_2,\sigma}}{\c{t, \sigma}}$, sau
+\item $\c{b_1,\sigma} \not\Downarrow$ și  $\c{b_2,\sigma} \not\Downarrow$ 
+\end{itemize}
+\end{block}
+\vfill
+\begin{block}{Echivalența expresiilor aritmetice} 
+$a_1\simeq a_2 \iff {}$ pentru orice $\sigma$   
+\begin{itemize}
+\item Există $n$ întreg astfel încât $\S{\c{a_1,\sigma}}{\c{n, \sigma}}$ și $\S{\c{a_2,\sigma}}{\c{n, \sigma}}$, sau
+\item $\c{a_1,\sigma} \not\Downarrow$ și  $\c{a_2,\sigma} \not\Downarrow$ 
+\end{itemize}
+\end{block}
+
+\end{frame}
+
+
+\begin{frame}{\only<beamer>{Echivalența semantică pentru limbajul IMP}}
+\begin{block}{Observație}
+Definiția dată pentru echivalență nu distinge între execuțiile eșuate $\c{p,\sigma}\not\Downarrow$
+\begin{itemize}
+\item operație aritmetică imposibilă (împărțire la 0)
+\item accesarea unei locații indisponibile
+\item ne-terminarea execuției
+\end{itemize}
+\end{block}
+
+\vfill
+\begin{block}{Temă de gândire}
+Dați exemplu de două fragmente de cod a căror execuție poate eșua în mod diferit, dar care sunt totuși echivalente.
+\end{block}
+\end{frame}
+
+\begin{frame}{Ne-echivalența semantică $\not\simeq$}
+
+\begin{block}{Modalitate de demonstrare — contraexemplul}
+	Pentru a arăta (de exemplu că) $c_1\not\simeq c_2$, e suficient să găsesc niște stări de memorie $\sigma$ și $\sigma'$ astfel încât:
+\[\S{\c{c_1,\sigma}}{\c{\Sskip,\sigma'}} \textbf{ și }\c{c_2,\sigma} \not\Downarrow \c{\Sskip,\sigma'}\]
+(sau invers)
+\end{block}
+
+\begin{block}{Exemplu}
+Pentru orice comenzi $C, C_1, C_2$ și orice expresie booleană $B$,
+\[{ C \terminal{;}{\Sif B \Sthen C_1 \Selse C_2}}  \simeq {\Sif B \Sthen (C \terminal{;} C_1) \Selse (C \terminal{;} C_2)}\mbox{ ?}\]
+\end{block}
+\end{frame}
+
+\begin{frame}{\only<beamer>{Echivalență semantică în IMP}}{Exemple}
+\begin{itemize}
+\item $C\terminal{;} {\Sskip} \simeq C \simeq {\Sskip}\terminal{;} C$ 
+\vitem $C_1 \terminal{;} (C_2 \terminal{;} C_3) \simeq (C_1 \terminal{;} C_2) \terminal{;} C_3$ 
+\vitem $({\Sif B \Sthen C_1 \Selse C_2}) \terminal{;} C  \simeq {\Sif B \Sthen (C_1 \terminal{;} C) \Selse (C_2 \terminal{;} C)}$ 
+\vitem $\Sif {\Strue} \Sthen C_1 \Selse C_2 \simeq C_1$
+\vitem $\Sif {\Sfalse} \Sthen C_1 \Selse C_2 \simeq C_2$
+\vitem $\Swhile  B \Sdo C \simeq {\Sif B \Sthen (C \terminal{;} {\Swhile  B \Sdo C}) \Selse {\Sskip}}$
+\vitem $l_1 \terminal{:=} n_1 \terminal{;} l_2 \terminal{:=} n_2\simeq \left\{\begin{array}{lll} l_2 \terminal{:=} n_2 \terminal{;} l_1 \terminal{:=} n_1 & \textbf{dacă} & l_1 \neq l_2
+\\ l_2 \terminal{:=} n_2 & \textbf{dacă} & l_1 = l_2 \end{array}\right.$ 
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Echivalența semantică este o congruență}
+\begin{theorem}
+Echivalența semantică este o relație de congruență — reflexivă, tranzitivă, simetrică și închisă la contexte.
+\end{theorem}
+
+\begin{block}{Demonstrație (Idee)}
+\begin{itemize}
+\item închiderea la contexte se deduce din închiderea la operații.
+\item cel mai dificil caz: 
+\[c_1\simeq c_2 \implies {{\Swhile b \Sdo c_1} \simeq {\Swhile b \Sdo c_2}}\]
+\end{itemize}
+\end{block}
+\end{frame}
+\end{section}
+
+\begin{section}{Variabile locale}
+\begin{frame}{IMPLoc: IMP cu declarații locale în blocuri}
+\begin{block}{Idee}
+Adăugarea unei noi comenzi care să introducă o variabilă locală temporară
+\end{block}
+
+\begin{block}{Exemplu}{Interschimbarea valorilor a două locații folosind o a treia}
+\[\begin{array}{ll}
+\Sbegin & \Sloc t \terminal{:=} {\terminal{!} x} \terminal{;}
+\\
+& x \terminal{:=} {\terminal{!} y} \terminal{;}
+\\
+& y \terminal{:=} {\terminal{!} t} 
+\\
+\Send
+\end{array}\]
+\end{block}
+\end{frame}
+\begin{frame}{Sintaxă}
+\vspace{-5ex}\begin{syntaxBlock}{\AExp}
+\alert{
+\begin{itemize}
+\item[]\renewcommand{\syntaxKeyword}{}
+\syntax{\Int\Smid\terminal{!}\Id \Smid \AExp\iop \AExp}{}
+\item[]\renewcommand{\defSort}{\BExp}
+\syntax{\Bool \Smid \AExp\bop \AExp}{}
+%\item[]\renewcommand{\defSort}{\Block}
+%\syntax{\terminal{\{}\Stmt\terminal{\}} \Smid \terminal{\{}\terminal{\}}}{} 
+\item[]\renewcommand{\defSort}{\Stmt}
+\syntax{\Sskip \Smid \Id \terminal{:=} \AExp \Smid  \Stmt\terminal{;}\Stmt}{}
+\syntaxCont{\Sif\BExp\Sthen \Block\Selse\Block \Smid \Swhile \BExp\Sdo \Block}{}
+\syntaxCont{\alert{\Sbegin {\Sloc \Id \terminal{:=} \AExp} \terminal{;} \Stmt \Send}}{}
+\item[]\renewcommand{\defSort}{\Pgm}
+\syntax{\AExp \Smid \BExp \Smid \Stmt}{} 
+\item[]\renewcommand{\defSort}{\Id}
+\syntax{\mbox{locație de memorie / variabilă}}{} 
+\\
+\renewcommand{\defSort}{\Int}
+\syntax{\mbox{număr întreg}}{}
+\\
+\renewcommand{\defSort}{\Bool}
+\syntax{\Strue \mid \Sfalse}{}
+\\
+\renewcommand{\defSort}{\iop}
+\syntax{\terminal{+} \Smid \terminal{-}\Smid \ldots}{}
+\renewcommand{\defSort}{\bop}
+\syntax{\terminal{=} \Smid \terminal{<}\Smid \ldots}{}
+%\syntaxCont{\terminal{and} \Smid \terminal{or}\Smid \ldots}{}
+\end{itemize}
+}
+\end{syntaxBlock}
+\end{frame}
+
+\begin{frame}{Semantică naturală}
+\[\reg{\S{\c{\Sbegin {\Sloc l \terminal{:=} e} \terminal{;} c \Send, \sigma}}{\c{\Sskip, \sigma''}}}{
+\S{\c{e,\sigma}}{\c{n,\sigma'}}\si \S{\c{c[l'/l],\sigma'[l' \mapsto n]}}{\c{\Sskip, \sigma''[l'\mapsto n']}}
+}{unde}\]
+
+\begin{itemize}
+\item $l'$ nu e definit în $\sigma$, $\sigma'$ sau $\sigma''$ și nu apare în $c$
+\item $c[l'/l]$ se obține înlocuind toate aparițiile lui $l$ în $c$ cu $l'$
+\end{itemize}
+
+\vfill
+\begin{block}{Explicații}
+\begin{itemize}
+\item $l$ se înlocuiește cu o locație nouă pentru a permite redeclarări
+
+\item Pentru a nu modifica memoria după execuție, $l'$ apare doar în condiție
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}{Semantică	 tranzitională}
+\begin{block}{Evaluarea expresiei de inițializare \hfill (BlockS)}
+$\reg{\Ss{\c{\Sbegin {\Sloc l \terminal{:=} e} \terminal{;} c \Send, \sigma}}{\c{\Sbegin {\Sloc l \terminal{:=} e'} \terminal{;} c \Send, \sigma'}}}{\Ss{\c{e,\sigma}}{\c{e',\sigma'}}}{}$
+\end{block}
+\vfill
+\begin{block}{Execuția instrucțiunii din bloc\hfill (BlockD)}
+$\reg{\Ss{\c{\Sbegin {\Sloc l \terminal{:=} n} \terminal{;} c \Send, \sigma}}{\c{\Sbegin {\Sloc l \terminal{:=} n'} \terminal{;} c' \Send, \sigma''}}}{\Ss{\c{c,\sigma[l\mapsto n]}}{\c{c',\sigma'}}}{}$
+
+\hfill $n' = \sigma'(l)$ și $\sigma'' = \sigma'[l\mapsto \sigma(l)]$ 
+\end{block}
+
+\begin{block}{Sfârșitul execuției \hfill (Block)}
+$\reg{\Ss{\c{\Sbegin {\Sloc l \terminal{:=} n} \terminal{;} {\Sskip} \Send, \sigma}}{\c{\Sskip, \sigma}}}{}{}$
+\end{block}
+\end{frame}
+
+\begin{frame}{Vrem/putem să demonstrăm}
+\begin{block}{Eliminarea declarației temporare}
+Dacă $x\neq t$ atunci 
+\[{\Sbegin {\Sloc t \terminal{:=} e} \terminal{;} x \terminal{:=} t \Send} \simeq x \terminal{:=} e\]
+\end{block}
+
+\begin{block}{Întrebare}
+Ce se întâmplă atunci când $x = t$?
+\end{block}
+\end{frame}
+
+\end{section}
