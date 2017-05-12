@@ -1,0 +1,478 @@
+%!TEX root = 08-tipuri.tex
+
+\begin{section}{Motivație}
+\begin{frame}<handout:0|article:0>{$\Sfun$-IMP}{Sintaxă}
+\vspace{-5ex}\begin{syntaxBlock}{\Exp}
+\alert{
+\begin{itemize}
+\item[]\renewcommand{\syntaxKeyword}{}
+\syntax{\Int\Smid\Bool \Smid \Id \Smid \Exp\iop \Exp \Smid\Exp\bop \Exp}{}
+\syntaxCont{\Sif\Exp\Sthen \Exp\Selse\Exp \Smid \terminal{!}\Exp \Smid \Exp \terminal{:=} \Exp}{}
+\syntaxCont{\Sskip \Smid  \Exp\terminal{;}\Exp \Smid \Swhile \Exp\Sdo \Exp}{}
+\syntaxCont{\structure{x}\Smid \fun{\structure{x}}{\Exp}\Smid \Exp \mathrel{} \Exp}{}
+\item[]\renewcommand{\defSort}{\Id}
+\syntax{\mbox{locație de memorie}}{} 
+\\
+\renewcommand{\defSort}{\Int}
+\syntax{\mbox{număr întreg}}{}
+\\
+\renewcommand{\defSort}{\Bool}
+\syntax{\Strue \mid \Sfalse}{}
+\\
+\renewcommand{\defSort}{\iop}
+\syntax{\mbox{operație binară cu rezultat întreg}}{}
+\renewcommand{\defSort}{\bop}
+\syntax{\mbox{operație binară cu rezultat boolean}}{}
+\renewcommand{\defSort}{\structure{x}}
+\syntax{\mbox{\alert{variabilă dintr-o mulțime infinită}}}{}
+\end{itemize}
+}
+\end{syntaxBlock}
+\end{frame}
+
+\begin{frame}<handout:0|article:0>{Semantică de evaluare pentru $\Sfun$-IMP}
+ Relație defnită inductiv, de forma 
+\[ \S{\c{e,\sigma}}{\c{v,\sigma'}}\]
+unde:
+\begin{itemize}
+\item $e$ și $v$ sunt termeni $\Sfun$-IMP \structure{închiși}, i.e., $\var(e) = \var(v) = \emptyset$
+\item $\sigma$ și $\sigma'$ sunt stări (funcții parțiale de la locații la numere întregi)
+\item $v$ este o valoare 
+\begin{syntaxBlock}{\structure{v}}
+\renewcommand{\syntaxKeyword}{}
+\syntax{\Int\Smid \Bool \Smid \Id \Smid \Sskip \Smid \fun{\structure{x}}{\Exp}}{}
+\end{syntaxBlock}
+\end{itemize}
+
+\begin{block}{Apel prin nume/apel prin valoare}
+\begin{itemize}
+\item
+Notăm $\c{e,\sigma}\Downarrow_n \c{v,\sigma'}$ dacă se folosește regula de apel prin nume
+\item
+Notăm $\c{e,\sigma}\Downarrow_v \c{v,\sigma'}$ dacă se folosește regula de apel prin valoare
+\end{itemize}
+\end{block}
+\end{frame}
+
+
+
+\begin{frame}{Sintaxa $\Sfun$-IMP este prea permisivă}
+\begin{block}{\alert{Problemă:} Mulți termeni acceptați de sintaxă nu pot fi evaluați}
+   \begin{itemize}
+   \item $2\;(\fun{x}{x})$\only<2>{--- expresia din stânga aplicației trebuie să reprezinte o funcție}
+    \item $(\fun{x}{x}) + 1$\only<2>{  --- adunăm funcții cu numere}
+   \item $(\fun{x}{x + 1})\; (\fun{x}{x})$\only<2>{ --- pot face o reducție, dar tot nu pot evalua}
+   \end{itemize}
+\end{block}
+\onslide<2>
+\vfill\begin{block}{Soluție:  Identificarea (precisă) a programelor corecte}
+\begin{itemize}
+\item Definim tipuri pentru fragmente de program corecte (e.g., int, bool)
+\item Definim (recursiv) o relație care să lege fragmente de program de tipurile asociate
+\[((\fun{x}{x + 1})\; ((\fun{x}{x})\; 3)) : \mbox{int}\]
+\end{itemize}
+\end{block}
+\end{frame}
+
+\end{section}
+
+\begin{section}{Semantică statică}
+
+\begin{subsection}{Asociere de tipuri}
+\begin{frame}{Relația de asociere de tipuri}
+Definim (recursiv) o relație de forma $\T{\Gamma}{e}{\tau}$, unde
+\begin{itemize}
+\item $\tau$ este un tip
+
+\vspace{-2ex}
+\begin{syntaxBlock}{\structure{\tau}}
+\color<beamer|handout>{black!25!white}{
+\renewcommand{\syntaxKeyword}{}
+\syntax{int}{întregi}
+\syntaxCont{bool}{valori de adevăr}
+\syntaxCont{loc(\structure{\tau})}{locații de memorie de tipul $\tau$}
+\syntaxCont{cmd}{comenzi}
+\syntaxCont{\structure{\tau} \rightarrow \structure{\tau}}{funcții}
+}
+\vspace{-4ex}
+\end{syntaxBlock}
+\item $e$ este un termen $\Sfun$-IMP (potențial cu variabile libere)
+\item $\Gamma$ este \structure{mediul de tipuri}, o funcție parțială finită care asociază tipuri variabilelor (libere ale lui $e$)
+\end{itemize}
+
+\begin{block}{Cum citim $\T{\Gamma}{e}{\tau}$?}
+Dacă variabila $x$ are tipul $\Gamma(x)$ pentru orice $x\in dom(\Gamma)$,\\ atunci termenul $e$ are tipul $\tau$.
+\end{block}
+\end{frame}
+
+
+\begin{frame}[fragile]{$\Sfun$-IMP}{Sintaxă --- Totul este o expresie}
+\vspace{-5ex}\begin{syntaxBlock}{\Exp}
+\alert{
+\begin{itemize}
+\item[]\renewcommand{\syntaxKeyword}{}
+\syntax{\Int\Smid\Bool \Smid \Exp\iop \Exp \Smid\Exp\bop \Exp \Smid \Sif\Exp\Sthen \Exp\Selse\Exp}{}
+\syntaxCont{\Sskip \Smid  \Exp\terminal{;}\Exp \Smid \Swhile \Exp\Sdo \Exp}{}
+\syntaxCont{\Sref \Exp \Smid \terminal{!}\Exp \Smid \Exp \terminal{:=} \Exp}{}
+\syntaxCont{\alert{\structure{x}\Smid \Sfun (\structure{x})\ \lstinline$->$\ \Exp\Smid \Exp \mathrel{} \Exp}}{}
+%\item[]\renewcommand{\defSort}{\Id}
+%\syntax{\mbox{locație de memorie}}{} 
+%\\
+\renewcommand{\defSort}{\Int}
+\syntax{\mbox{număr întreg}}{}
+\\
+\renewcommand{\defSort}{\Bool}
+\syntax{\Strue \mid \Sfalse}{}
+\\
+\renewcommand{\defSort}{\iop}
+\syntax{\mbox{operație binară cu rezultat întreg}}{}
+\renewcommand{\defSort}{\bop}
+\syntax{\mbox{operație binară cu rezultat boolean}}{}
+\renewcommand{\defSort}{\structure{x}}
+\syntax{\mbox{\alert{variabilă dintr-o mulțime infinită}}}{}
+\end{itemize}
+}
+\end{syntaxBlock}
+\end{frame}
+
+
+
+\begin{frame}{Axiome}
+\begin{itemize}
+\item[] $\reg[:var]{\T{\Gamma}{x}{\tau}}{}{\Gamma(x) = \tau}$
+\vitem[] $\reg[:int]{\T{\Gamma}{n}{int}}{}{\mbox{$n$ întreg}}$
+\vitem[] $\reg[:bool]{\T{\Gamma}{b}{bool}}{}{\mbox{$b$ valoare de adevăr}}$
+\vitem[] $\reg[:skip]{\T{\Gamma}{\Sskip}{cmd}}{}{}$
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+{Expresii}
+\begin{itemize}
+\item[]
+$\reg[:iop]{\T{\Gamma}{e_1\mathrel{o} e_2}{int}}{\T{\Gamma}{e_1}{int} \si \T{\Gamma}{e_2}{int}}{o\in iop}$
+
+\vitem[]
+$\reg[:bop]{\T{\Gamma}{e_1\mathrel{o} e_2}{bool}}{\T{\Gamma}{e_1}{int} \si \T{\Gamma}{e_2}{int}}{o\in bop}$
+
+\vitem[]
+$\reg[:if]{\T{\Gamma}{\Sif e_b \Sthen e_1 \Selse e_2}{\tau}}{\T{\Gamma}{e_b}{bool} \si \T{\Gamma}{e_1}{\tau} \si \T{\Gamma}{e_2}{\tau}}{}$
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+{Fragmentul imperativ}
+\begin{itemize}
+\item[]
+$\reg[:ref]{\T{\Gamma}{\mathrel{ref} e}{loc(\tau)}}{\T{\Gamma}{e}{\tau}}{}$
+
+\vitem[]
+$\reg[:dref]{\T{\Gamma}{\mathrel{!} e}{\tau}}{\T{\Gamma}{e}{loc(\tau)}}{}$
+
+\vitem[]
+$\reg[:asgn]{\T{\Gamma}{e_1\mathrel{:=} e_2}{cmd}}{\T{\Gamma}{e_1}{loc(\tau)} \si \T{\Gamma}{e_2}{\tau}}{}$
+
+\vitem[]
+$\reg[:seq]{\T{\Gamma}{e_1\mathrel{;} e_2}{\tau_2}}{\T{\Gamma}{e_1}{\tau_1} \si \T{\Gamma}{e_2}{\tau_2}}{}$
+
+\vitem[]
+$\reg[:while]{\T{\Gamma}{\Swhile e_b \Sdo e}{cmd}}{\T{\Gamma}{e_b}{bool} \si \T{\Gamma}{e}{\tau}}{}$
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Fragmentul funcțional}
+\begin{itemize}
+\item[] 
+$\displaystyle\reg[:fn]{\T{\Gamma}{\fun{x}{e}}{\tau \rightarrow \tau'}}{\T{\Gamma'}{e}{\tau'}}{x\not\in dom(\Gamma) \mbox{ și } \Gamma' = \Gamma[x\mapsto \tau]}$
+
+\vitem[]
+$\displaystyle\reg[:app]{\T{\Gamma}{e_1\; e_2}{\tau}}{\T{\Gamma}{e_1}{\tau' \rightarrow \tau} \si \T{\Gamma}{e_2}{\tau'}}{}$
+\end{itemize}
+\end{frame}
+
+\end{subsection}
+
+\begin{subsection}{Proprietăți}
+
+\begin{frame}{Programe în execuție}
+ \begin{alertblock}{Problemă:}
+ \begin{itemize}
+   \item În timpul execuției programul conține locații
+   \item Care este tipul lor?
+ \end{itemize}
+ \end{alertblock} 
+
+ \begin{block}{Soluție}
+ \begin{itemize}
+ \item Adăugăm locațiile la mediul de tipuri $\Gamma$
+ \item Adăugam regula $\reg[:loc]{\T{\Gamma}{l}{\tau}}{}{\Gamma(l) = \tau}$
+ \item Mediul de tipuri $\Gamma_\sigma$ asociat unei stări de memorie $\sigma$ satisface:
+ \begin{itemize}
+ \item $\Dom(\Gamma_\sigma) = \Dom(\sigma)$
+ \item Pentru orice locație $l\in \Dom(\sigma)$, există $\tau$ tip și $v$ valoare astfel încât $\Gamma_s(l) = loc(\tau)$, $\sigma(l) = v$ și $\T{\Gamma_s}{v}{\tau}$
+ \end{itemize}
+ \end{itemize}
+ \end{block}
+\end{frame}
+
+\begin{frame}{Proprietăți}{ale sistemului de tipuri pentru limbajul $\Sfun$-IMP}
+\begin{theorem}[Proprietatea de a progresa] Dacă $\T{\Gamma_s}{e}{\tau}$ atunci $e$ este valoare sau $\c{e,\sigma}$ poate progresa: există $e'$, $\sigma'$ astfel încât $\Ss{\c{e,\sigma}}{\c{e',\sigma'}}$.
+\end{theorem}
+\vfill
+
+\begin{theorem}[Proprietatea de conservare a tipului]
+Dacă $\T{\Gamma_s}{e}{\tau}$ și $\Ss{\c{e,\sigma}}{\c{e',\sigma'}}$, atunci 
+$\T{\Gamma_{\sigma'}}{e'}{\tau}$.
+\end{theorem}
+
+\vfill
+\begin{theorem}[Siguranță---programele bine formate nu se împotmolesc]
+Dacă $\T{\Gamma_s}{e}{\tau}$ și ${\c{e,\sigma}}\longrightarrow^\ast{\c{e',\sigma'}}$, atunci $e'$ este valoare sau există $e''$, $\sigma''$ astfel încât $\Ss{\c{e',\sigma'}}{\c{e'',\sigma''}}$.
+\end{theorem}
+
+\end{frame}
+
+\begin{frame}{Probleme computaționale}
+\begin{block}{Verificarea tipului}
+Date fiind $\Gamma$, $e$ și $\tau$, verificați dacă $\tjud{e}{\tau}$.
+\end{block}
+
+\begin{block}{Determinarea (inferarea) tipului}
+Date fiind $\Gamma$ și $e$, găsiți (sau arătați ce nu există) un $\tau$ astfel încât $\tjud{e}{\tau}$.
+\end{block}
+
+\begin{itemize}
+\item A doua problemă e mai grea în general decât prima
+\item Algoritmi de inferare a tipurilor
+\begin{itemize}
+\item Colectează constrângeri asupra tipului
+\item Folosesc metode de rezolvare a constrângerilor (programare logică)
+\end{itemize}
+\item Pentru limbajul nostru ambele probleme sunt ușoare
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Probleme computaționale}{Proprietăți}
+\begin{theorem}[Determinarea tipului este decidabilă]
+Date fiind $\Gamma$ și $e$, poate fi găsit (sau demonstrat că nu există) un $\tau$ astfel încât 
+$\tjud{e}{\tau}$.
+\end{theorem}
+\vfill
+
+\begin{theorem}[Verificarea tipului este decidabilă]
+Date fiind $\Gamma$, $e$ și $\tau$, problema $\tjud{e}{\tau}$ este decidabilă.
+\end{theorem}
+
+\vfill
+\begin{theorem}[Unicitatea tipului]
+Dacă $\tjud{e}{\tau}$ și $\tjud{e}{\tau'}$, atunci $\tau=\tau'$.
+\end{theorem}
+\end{frame}
+
+\begin{frame}{Argumente împotriva sistemelor de tipuri}
+\begin{itemize}
+  \item<2-> Sistemul de tipuri e prea restrictiv: programe „bune“ nu se compilează
+      \[\Sif {\Sfalse} \Sthen 1 \Selse {\Strue}\]
+
+  \vitem<3-> E pierdere de vreme să tot urmărești tipurile și să le modifici
+     
+     (limbaje de scripting)
+
+  \vitem<4-> E prea mult de scris (e.g., tipuri STL in C++)
+    
+    Soluție:  Detectarea tipurilor
+
+  \vitem<5-> Erorile de tipuri sunt greu/imposibil de citit
+
+     Câteodată da --- a se vedea erorile STL \ldots
+
+  \vitem<6> Tipurile nu mă lasă să scriu codul care îl vreau
+\end{itemize}
+\end{frame}
+
+\end{subsection}
+
+\begin{subsection}{Definiții locale}
+\begin{frame}[fragile]{Definiții locale de variabile}{Sintaxă}
+\vspace{-5ex}\begin{syntaxBlock}{\Exp}
+
+\alert{
+\begin{itemize}
+\item[]\renewcommand{\syntaxKeyword}{}
+\syntax{\Int\Smid\Bool \Smid \Exp\iop \Exp \Smid\Exp\bop \Exp \Smid \Sif\Exp\Sthen \Exp\Selse\Exp}{}
+\syntaxCont{\Sskip \Smid  \Exp\terminal{;}\Exp \Smid \Swhile \Exp\Sdo \Exp}{}
+\syntaxCont{\Sref \Exp \Smid \terminal{!}\Exp \Smid \Exp \terminal{:=} \Exp}{}
+\syntaxCont{{\structure{x}\Smid \Sfun (\structure{x})\ \lstinline$->$\ \Exp\Smid \Exp \mathrel{} \Exp}}{}
+\syntaxCont{\alert{\Slet {\structure{x}} = {\Exp} \Sin \Exp}}{}
+\end{itemize}
+}
+\end{syntaxBlock}
+
+\begin{block}{Exemple}
+\begin{minipage}[t]{.35\columnwidth}
+\begin{verbatim}
+let n = 10 in (
+  sum := 0 ;
+  i := n ;
+  while ! i > 0 do (
+     sum  := !sum + !i;
+     i := !i - 1;
+  )
+)
+\end{verbatim}
+\end{minipage}
+\hfill\begin{minipage}[t]{.45\columnwidth}
+\begin{verbatim}
+let x = 10 in
+   x + (let x = 20 + x in 
+          x + x)
+\end{verbatim}
+\end{minipage}
+\end{block}
+\end{frame}
+
+\begin{frame}{Definire prin funcții și aplicații}
+\begin{block}{Semantica declarațiilor locale}
+\[\Slet x = e_1 \Sin e_2  \stackrel{def}{=} (\fun{x}{e_2})\; e_1\]
+\end{block}
+\vfill
+\begin{block}{Tipul asociat (regulă derivată)}
+\[\reg[:let]{\T{\Gamma}{\Slet x = e_1 \Sin e_2}{\tau_2}}{\T{\Gamma}{e_1}{\tau_1} \si \T{\Gamma[x\mapsto \tau_1]}{e_2}{\tau_2}}{}\]
+\end{block}
+\end{frame}
+
+\begin{frame}{Evaluarea declarațiilor locale}
+\begin{block}{Apel prin nume (regulă derivată)}
+\[\reg[let-n]{\c{\Slet x = e_1 \Sin e_2,\sigma}\Downarrow_n\c{v,\sigma'}}
+{\c{e_2[e_1/x],\sigma}\Downarrow_n\c{v,\sigma'}}{}\]
+\end{block}
+
+\vfill
+\begin{block}{Apel prin valoare (regulă derivată)}
+\[\reg[let-v]{\c{\Slet x = e_1 \Sin e_2,\sigma}\Downarrow_v\c{v_2,\sigma_2}}
+{\c{e_1,\sigma}\Downarrow_v\c{v_1,\sigma_1} \si \c{e_2[v_1/x],\sigma_1}\Downarrow_v\c{v_2,\sigma_2}}{}\]
+\end{block}
+\end{frame}
+
+\begin{frame}{$\alpha$-echivalență penrtu declarații locale}
+\begin{itemize}
+\item Operatorul $\Slet x = e_1 \Sin e_2$ este un operator de legare (derivat)
+\begin{itemize}
+\item Leagă variabila $x$ în termenul $e_2$  (dar nu și în $e_1$)
+\item Ușor de observat din definiția lui $\Slet$ în funcție de $\Sfun$
+\end{itemize}
+\vitem $\var(\Slet x = e_1 \Sin e_2) = \var(e_1) \cup (\var(e_2) \setminus \{x\})$
+\vitem $\Slet x = e_1 \Sin e_2 \equiv_\alpha \Slet x' = e_1 \Sin e_2[x'/x]$, dacă $x'\not\in\var(e_2)$
+\begin{itemize}
+\item $\Slet x = 10 \Sin
+   x + (\Slet x = 20 + x \Sin 
+          x + x) \equiv_\alpha$\\$\Slet x = 10 \Sin
+   x + (\Slet y = 20 + x \Sin 
+          y + y)$
+\end{itemize}
+\end{itemize}
+\end{frame}
+\end{subsection}
+\begin{subsection}{Definiții (locale) recursive}
+
+\begin{frame}{Definiții recursive \only<2>{\alert{?}}}
+\begin{block}{Întrebare: La ce se evaluează următorul program?}
+\[\Slet f = \fun{n}{\Sif n \leq 0 \Sthen 0 \Selse n + (\alert<2>{f} (n - 1))} \Sin f\; 10\] 
+\end{block}
+
+\onslide<2>
+\begin{alertblock}{Răspuns: La nimic}
+Deoarece programul nu este închis: $f$ apare liber în definiția lui $f$. 
+
+Avem nevoie de un mecanism separat  pentru a putea defini funcții recursive.
+\end{alertblock}
+
+\end{frame}
+
+\begin{frame}[fragile]{Limbajul $\Sfun^+$-IMP}{Sintaxă}
+\vspace{-5ex}\begin{syntaxBlock}{\Exp}
+\alert{
+\begin{itemize}
+\item[]\renewcommand{\syntaxKeyword}{}
+\syntax{\Int\Smid\Bool \Smid \Exp\iop \Exp \Smid\Exp\bop \Exp \Smid \Sif\Exp\Sthen \Exp\Selse\Exp}{}
+\syntaxCont{\Sskip \Smid  \Exp\terminal{;}\Exp \Smid \Swhile \Exp\Sdo \Exp}{}
+\syntaxCont{\Sref \Exp \Smid \terminal{!}\Exp \Smid \Exp \terminal{:=} \Exp}{}
+\syntaxCont{{\structure{x}\Smid \Sfun (\structure{x})\ \lstinline$->$\ \Exp\Smid \Exp \mathrel{} \Exp}}{}
+\syntaxCont{\alert{\Sletrec \structure{x} = \Exp  \Sin \Exp}}{}
+\end{itemize}
+}
+\end{syntaxBlock}
+
+\vspace{-3ex}
+\begin{block}{Exemple}
+\begin{minipage}[t]{.35\columnwidth}
+\begin{verbatim}
+letrec sum = fun (n) ->
+  if n <= 0 
+  then 0 
+  else n + (sum (n - 1))
+in sum 10 
+\end{verbatim}
+\end{minipage}
+\hfill\begin{minipage}[t]{.5\columnwidth}
+\begin{verbatim}
+letrec fnwhile = 
+  fun (b) -> fun (c) -> if b 
+  then c ; (fnwhile b c) 
+  else skip
+in (sum := 0; n := 10;
+     fnwhile (!n > 0) 
+      (sum := !sum + !n; 
+       n := !n - 1)) 
+\end{verbatim}
+\end{minipage}
+\end{block}
+\end{frame}
+
+\begin{frame}{Variabile libere, substituție și $\alpha$-echivalență}
+\begin{itemize}
+\item $\Sletrec x = e_1 \Sin e_2$ leagă variabila x atât în $e_1$ cât și în $e_2$
+\[\Sletrec \structure{f} = \fun{n}{\Sif n \leq 0 \Sthen 0 \Selse n + (\structure{f} (n - 1))} \Sin \structure{f}\; 10\] 
+
+\vitem $\var(\Sletrec x = e_1 \Sin e_2) = (\var(e_1) \cup \var(e_2)) \setminus \{x\}$
+
+\vitem $\displaystyle\reg{(\Sletrec x = e_1 \Sin e_2)[e/y] = \Sletrec x = e_1' \Sin e_2'}{e_1[e/y] = e_1' \si e_2[e/y] = e_2'}{x\not\in \var(e)\cup \{ y\}}$
+
+\vitem $\Sletrec x = e_1 \Sin e_2 \equiv_\alpha \Sletrec y = e_1[y/x] \Sin e_2[y/x]$ dacă $y\not\in \var(e_1)\cup \var(e_2)$
+ 
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Semantică statică}{Tipul unei definiții recursive}
+\[\reg[:letrec]{\T{\Gamma}{\Sletrec x = e_1 \Sin e_2}{\tau_2}}{\T{\Gamma[x\mapsto \tau_1]}{e_1}{\tau_1}\si\T{\Gamma[x\mapsto \tau_1]}{e_2}{\tau_2}}{}
+\]
+\end{frame}
+
+\begin{frame}{Semantica evaluării}{Apel prin nume}
+\[\reg[letrec-n]{\c{\Sletrec x = e_1 \Sin e_2,\sigma}\Downarrow_n\c{v,\sigma'}}
+{\c{e_2[\Sletrec x = e_1 \Sin e_1/x],\sigma}\Downarrow_n\c{v,\sigma'}}{}\]
+\end{frame}
+
+\begin{frame}{Operatori de punct fix}
+\begin{block}{Definiție (derivată)}
+\[\mu x . e \stackrel{def}{=} \Sletrec x = e \Sin e\]
+\end{block}
+
+\vfill
+\begin{block}{Semantică statică (derivată)}
+\[\reg[:$\mu$]{\T{\Gamma}{\mu x . e}{\tau}}{\T{\Gamma[x\mapsto \tau]}{e}{\tau}}{}\] 
+\end{block}
+
+\vfill
+\begin{block}{Semantica evaluării (derivată)}
+\[\reg[$\mu$-n]{\c{\mu x . e,\sigma}\Downarrow_n\c{v,\sigma'}}
+{\c{e[\mu x . e /x],\sigma}\Downarrow_n\c{v,\sigma'}}{}\]
+\end{block}
+
+\end{frame}
+
+\end{subsection}
+\end{section}
