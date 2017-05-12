@@ -38,7 +38,7 @@
 
 
 \newlength{\deltay}
-\setlength{\deltay}{1em}
+\setlength{\deltay}{1ex}
 \newlength{\deltax}
 \setlength{\deltax}{1em}
 
@@ -86,7 +86,7 @@
 \newcommand{\Ran}{\mathop{\it Im}}
 \newcommand{\subst}[1]{[#1]}
 \newcommand{\substpair}[2]{#1/#2}
-\newcommand{\substapp}[2]{#1\mathrel{}#2}
+\newcommand{\substapp}[2]{#1\mathbin{}#2}
 \newcommand{\substcomp}[2]{#1\mathrel{}#2}
 \newcommand{\Th}[1]{\structure{Th}({\ensuremath #1})}
 \newcommand{\R}{{\cal R}}
@@ -102,6 +102,7 @@
 \newcommand{\Sdone}{\terminal{done}}
 \newcommand{\Slet}{\terminal{let}}
 \newcommand{\Sfun}{\terminal{fun}}
+\newcommand{\fun}[2]{\lstinline$fun$ ({#1}) \lstinline$->$ {#2}}
 \newcommand{\Sletrec}{\terminal{let rec}}
 \newcommand{\Sref}{\terminal{ref}}
 \newcommand{\Sin}{\terminal{in}}
@@ -320,9 +321,9 @@
 \newcommand{\arbore}[4]{%
 \graph{%
   \Vertex[L={\;#1\;}]{R}%
-  \SOWE[L={\;#2\;}](R){S1}%
-  \SOEA[L={\;#4\;}](R){S3}% 
-  \SO[L={\;#3\;}](R){S2} %
+  \SOWE[unit=0.75,L={\;#2\;}](R){S1}%
+  \SOEA[unit=0.75,L={\;#4\;}](R){S3}% 
+  \SO[unit=0.75,L={\;#3\;}](R){S2} %
   \ifthenelse{\equal{#2}{}}{}{\Edge(R)(S1)}%
   \ifthenelse{\equal{#3}{}}{}{\Edge(R)(S2)}%
   \ifthenelse{\equal{#4}{}}{}{\Edge(R)(S3)}%

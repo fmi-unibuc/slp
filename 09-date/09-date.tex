@@ -4,129 +4,129 @@
 
 
 \title[SLP---Tipuri de date]{DATA-IMP}
-\subtitle{FUN-IMP + referințe și date structurate}
+\subtitle{$\Sfun$-IMP + date structurate}
 \begin{document}
 \maketitle
 
-\begin{section}{Referințe}
-\begin{frame}{Referințe}{Sintaxă}
-\begin{syntaxBlock}{\Exp}
-\alert{
-\begin{itemize}
-\item[]\renewcommand{\syntaxKeyword}{}
-\syntax{\ldots}{}
-\syntaxCont{\Sref \Exp}{}
-\syntaxCont{\alert{\Exp} \terminal{:=} \Exp}{}
-\syntaxCont{\terminal{!} \alert{\Exp}}{}
-\item[] \syntax[\structure{T}]{{\Sint}\Smid {\Sbool}\Smid {\Sunit}\Smid \structure{T} \rightarrow \structure{T} \Smid \structure{T} \Sref}{} 
-	\end{itemize}
-}
-\end{syntaxBlock}
-\begin{block}{}
-\begin{itemize}
-\item Se elimină locațiile din sintaxă 
-\item Se permite folosirea de expresii în locul locațiilor 
-\begin{itemize}\item la atribuire și dereferențiere \end{itemize}
-\item Se introduce o nouă construcție pentru creerea de locații.
-\end{itemize}
-\end{block}
-
-\end{frame}
-
-\begin{frame}{Semantică intuitivă}
-\begin{description}
-\item[$\Sref e$] Alocă o nouă locație de memorie în care stochează (valoarea expresiei) $e$ și se evaluează la o referință la acea locație.
-\vitem[$\terminal{!} e$] Se așteaptă ca $e$ să se evalueze la o referință la o locație și în acest caz se evaluează la valoarea stocată în memorie la acea locație.
-\vitem[$e_1 \terminal{:=} e_2$] Se așteaptă ca $e_1$ să se evalueze la o referință la o locație și în acest caz stochează în acea locație (valoarea expresiei) $e_2$.
-\end{description}
-\end{frame}
-
-
-\begin{frame}[fragile]{Referințe}{Exemple}
-\begin{minipage}{.35\columnwidth}
-\begin{asciiml}
-let x = ref 10 in
-let s = ref 0 in
-  while 1 <= !x do
-    s := !s + !x;
-    x := !x + -1
-  done
-\end{asciiml}
-\end{minipage}
-\hfill
-\begin{minipage}{.60\columnwidth}
-\begin{asciiml}
-let f = ref (fun (x : int) -> x) in
-f := (fun (x : int) -> if x <= 0 
-                       then 0 
-                       else x + !f (x + -1)) ;
-!f 100
-\end{asciiml}
-\end{minipage}
-\end{frame}
-
-
-\begin{frame}{Tipuri pentru referințe}
-\begin{block}{Mediul de tipuri}
-\begin{itemize}
-\item Observați că limbajul DATA-IMP nu mai are locații explicite!
-\item Așadar mediul de tipuri rămâne o funcție parțială de domeniu finit care asociază tipuri variabilelor $\Gamma : \mathbb{X} \stackrel\circ\rightarrow T$
-\end{itemize}
-\end{block}
-
-\begin{block}{Reguli de tipuri}
-\begin{itemize}
-\item[] 
-$\reg[tRef]{\tjud{\Sref e}{T \Sref}}{\tjud{e}{T}{}}{}$
-\item[]
-\item[] $\reg[tDeref]{\tjud{\terminal{!} e}{T}}{\tjud{e}{T \Sref}{}}{}$
-\item[]
-\item[]
-$\reg[tAtrib]{\tjud{e_1 \terminal{:=} e_2}{\Sunit}}{\tjud{e_1}{T \Sref}{}\si \tjud{e_2}{T}{}}{}$
-
-\end{itemize}
-\end{block}
-\end{frame}
-
-\begin{frame}{Memoria pentru DATA-IMP}
-\begin{block}{Ce putem stoca?}
-Orice: întregi, booleeni, instrucțiuni, funcții, referințe, \ldots 
-\end{block}
-
-\begin{block}{Locații}
-\begin{itemize}
-\item Întrucât nu mai apar în programe, sunt complet abstracte
-\item În implementări putem prefera întregi pentru eficiență crescută
-\end{itemize}
-\end{block}
-
-\begin{block}{Starea memoriei}
-Funcție parțială de domeniu finit de la mulțimea locațiilor la mulțimea expresiilor
-\[s : \mathbb{L} \stackrel\circ\rightarrow \mathbb{E}\] 
-\end{block}
-\end{frame}
-
-\begin{frame}{Semantica referințelor}
-\begin{block}{Valori de tip referință}
-Extindem (doar pentru motive semantice) sintaxa limbajului cu valori de tip referință:
-\[\structure{v} \mathrel{::=} \structure{l}\]
-\end{block}
-\begin{block}{Reguli de reducere}
-\begin{itemize}
-\item[] $\reg[refS]{\Ss{\c{\Sref e,s}}{\c{\Sref e',s'}}}{\Ss{\c{e,s}}{\c{e',s'}}}{}$
-
-\item[] $\reg[ref]{\Ss{\c{\Sref v,s}}{\c{l,s'}}}{}{l\not\in\Dom s, s' = s[l\mapsto v]}$
-
-\item[] $\reg[derefS]{\Ss{\c{\terminal{!} e,s}}{\c{\terminal{!} e',s'}}}{\Ss{\c{e,s}}{\c{e',s'}}}{}$
-
-\item[] $\reg[atribS]{\Ss{\c{e_1 \terminal{:=} e_2,s}}{\c{e_1' \terminal{:=} e_2,s'}}}{\Ss{\c{e_1,s}}{\c{e_1',s'}}}{}$
-\end{itemize}
-
-\structure{({\sc loc}), ({\sc atribD}) și ({\sc atrib}):} Rămân la fel ca formă, dar acum $l$ este expresie
-\end{block}
-\end{frame}
-\end{section}
-
+%\begin{section}{Referințe}
+%\begin{frame}{Referințe}{Sintaxă}
+%\begin{syntaxBlock}{\Exp}
+%\alert{
+%\begin{itemize}
+%\item[]\renewcommand{\syntaxKeyword}{}
+%\syntax{\ldots}{}
+%\syntaxCont{\Sref \Exp}{}
+%\syntaxCont{\alert{\Exp} \terminal{:=} \Exp}{}
+%\syntaxCont{\terminal{!} \alert{\Exp}}{}
+%\item[] \syntax[\structure{T}]{{\Sint}\Smid {\Sbool}\Smid {\Sunit}\Smid \structure{T} \rightarrow \structure{T} \Smid \structure{T} \Sref}{} 
+%	\end{itemize}
+%}
+%\end{syntaxBlock}
+%\begin{block}{}
+%\begin{itemize}
+%\item Se elimină locațiile din sintaxă 
+%\item Se permite folosirea de expresii în locul locațiilor 
+%\begin{itemize}\item la atribuire și dereferențiere \end{itemize}
+%\item Se introduce o nouă construcție pentru creerea de locații.
+%\end{itemize}
+%\end{block}
+%
+%\end{frame}
+%
+%\begin{frame}{Semantică intuitivă}
+%\begin{description}
+%\item[$\Sref e$] Alocă o nouă locație de memorie în care stochează (valoarea expresiei) $e$ și se evaluează la o referință la acea locație.
+%\vitem[$\terminal{!} e$] Se așteaptă ca $e$ să se evalueze la o referință la o locație și în acest caz se evaluează la valoarea stocată în memorie la acea locație.
+%\vitem[$e_1 \terminal{:=} e_2$] Se așteaptă ca $e_1$ să se evalueze la o referință la o locație și în acest caz stochează în acea locație (valoarea expresiei) $e_2$.
+%\end{description}
+%\end{frame}
+%
+%
+%\begin{frame}[fragile]{Referințe}{Exemple}
+%\begin{minipage}{.35\columnwidth}
+%\begin{asciiml}
+%let x = ref 10 in
+%let s = ref 0 in
+%  while 1 <= !x do
+%    s := !s + !x;
+%    x := !x + -1
+%  done
+%\end{asciiml}
+%\end{minipage}
+%\hfill
+%\begin{minipage}{.60\columnwidth}
+%\begin{asciiml}
+%let f = ref (fun (x : int) -> x) in
+%f := (fun (x : int) -> if x <= 0 
+%                       then 0 
+%                       else x + !f (x + -1)) ;
+%!f 100
+%\end{asciiml}
+%\end{minipage}
+%\end{frame}
+%
+%
+%\begin{frame}{Tipuri pentru referințe}
+%\begin{block}{Mediul de tipuri}
+%\begin{itemize}
+%\item Observați că limbajul DATA-IMP nu mai are locații explicite!
+%\item Așadar mediul de tipuri rămâne o funcție parțială de domeniu finit care asociază tipuri variabilelor $\Gamma : \mathbb{X} \stackrel\circ\rightarrow T$
+%\end{itemize}
+%\end{block}
+%
+%\begin{block}{Reguli de tipuri}
+%\begin{itemize}
+%\item[] 
+%$\reg[tRef]{\tjud{\Sref e}{T \Sref}}{\tjud{e}{T}{}}{}$
+%\item[]
+%\item[] $\reg[tDeref]{\tjud{\terminal{!} e}{T}}{\tjud{e}{T \Sref}{}}{}$
+%\item[]
+%\item[]
+%$\reg[tAtrib]{\tjud{e_1 \terminal{:=} e_2}{\Sunit}}{\tjud{e_1}{T \Sref}{}\si \tjud{e_2}{T}{}}{}$
+%
+%\end{itemize}
+%\end{block}
+%\end{frame}
+%
+%\begin{frame}{Memoria pentru DATA-IMP}
+%\begin{block}{Ce putem stoca?}
+%Orice: întregi, booleeni, instrucțiuni, funcții, referințe, \ldots 
+%\end{block}
+%
+%\begin{block}{Locații}
+%\begin{itemize}
+%\item Întrucât nu mai apar în programe, sunt complet abstracte
+%\item În implementări putem prefera întregi pentru eficiență crescută
+%\end{itemize}
+%\end{block}
+%
+%\begin{block}{Starea memoriei}
+%Funcție parțială de domeniu finit de la mulțimea locațiilor la mulțimea expresiilor
+%\[\sigma : \mathbb{L} \stackrel\circ\rightarrow \mathbb{E}\] 
+%\end{block}
+%\end{frame}
+%
+%\begin{frame}{Semantica referințelor}
+%\begin{block}{Valori de tip referință}
+%Extindem (doar pentru motive semantice) sintaxa limbajului cu valori de tip referință:
+%\[\structure{v} \mathrel{::=} \structure{l}\]
+%\end{block}
+%\begin{block}{Reguli de reducere}
+%\begin{itemize}
+%\item[] $\reg[refS]{\Ss{\c{\Sref e,\sigma}}{\c{\Sref e',\sigma'}}}{\Ss{\c{e,\sigma}}{\c{e',\sigma'}}}{}$
+%
+%\item[] $\reg[ref]{\Ss{\c{\Sref v,\sigma}}{\c{l,\sigma'}}}{}{l\not\in\Dom \sigma, \sigma' = \sigma[l\mapsto v]}$
+%
+%\item[] $\reg[derefS]{\Ss{\c{\terminal{!} e,\sigma}}{\c{\terminal{!} e',\sigma'}}}{\Ss{\c{e,\sigma}}{\c{e',\sigma'}}}{}$
+%
+%\item[] $\reg[atribS]{\Ss{\c{e_1 \terminal{:=} e_2,\sigma}}{\c{e_1' \terminal{:=} e_2,\sigma'}}}{\Ss{\c{e_1,\sigma}}{\c{e_1',\sigma'}}}{}$
+%\end{itemize}
+%
+%\structure{({\sc loc}), ({\sc atribD}) și ({\sc atrib}):} Rămân la fel ca formă, dar acum $l$ este expresie
+%\end{block}
+%\end{frame}
+%\end{section}
+%
 \begin{section}{Perechi}
 \begin{frame}{Perechi}
 \begin{block}{Sintaxă}
@@ -173,14 +173,14 @@ O pereche de valori este o valoare:
 \end{block}
 \begin{block}{Reguli de reducere}
 \begin{itemize}
-\item[] {\small $\reg[pairS]{\Ss{\c{(e_1,e_2),s}}{\c{(e_1',e_2),s'}}}{\Ss{\c{e_1,s}}{\c{e_1',s'}}}{}$ 
-\hfill $\reg[pairD]{\Ss{\c{(e_1,e_2),s}}{\c{(e_1,e_2'),s'}}}{\Ss{\c{e_2,s}}{\c{e_2',s'}}}{}$}
+\item[] {\small $\reg[pairS]{\Ss{\c{(e_1,e_2),\sigma}}{\c{(e_1',e_2),\sigma'}}}{\Ss{\c{e_1,\sigma}}{\c{e_1',\sigma'}}}{}$ 
+\hfill $\reg[pairD]{\Ss{\c{(e_1,e_2),\sigma}}{\c{(e_1,e_2'),\sigma'}}}{\Ss{\c{e_2,\sigma}}{\c{e_2',\sigma'}}}{}$}
 
-\item[] $\reg[fstS]{\Ss{\c{\terminal{fst} e,s}}{\c{\terminal{fst} e',s'}}}{\Ss{\c{e,s}}{\c{e',s'}}}{}$
-\hfill $\reg[sndS]{\Ss{\c{\terminal{snd} e,s}}{\c{\terminal{snd} e',s'}}}{\Ss{\c{e,s}}{\c{e',s'}}}{}$
+\item[] $\reg[fstS]{\Ss{\c{\terminal{fst} e,\sigma}}{\c{\terminal{fst} e',\sigma'}}}{\Ss{\c{e,\sigma}}{\c{e',\sigma'}}}{}$
+\hfill $\reg[sndS]{\Ss{\c{\terminal{snd} e,\sigma}}{\c{\terminal{snd} e',\sigma'}}}{\Ss{\c{e,\sigma}}{\c{e',\sigma'}}}{}$
 
-\item[] $\reg[fst]{\Ss{\c{\terminal{fst} (v_1,v_2),s}}{\c{v_1,s}}}{}{}$ 
-\hfill $\reg[snd]{\Ss{\c{\terminal{snd} (v_1,v_2),s}}{\c{v_2,s}}}{}{}$ 
+\item[] $\reg[fst]{\Ss{\c{\terminal{fst} (v_1,v_2),\sigma}}{\c{v_1,\sigma}}}{}{}$ 
+\hfill $\reg[snd]{\Ss{\c{\terminal{snd} (v_1,v_2),\sigma}}{\c{v_2,\sigma}}}{}{}$ 
 
 \end{itemize}
 \end{block}
@@ -237,14 +237,14 @@ O variantă cu argument valoare este o valoare:}
 \begin{block}{Reguli de reducere}
 {\small
 \begin{itemize}
-\item[] $\reg[InjLS]{\Ss{\c{\SInjL e : T,s}}{\c{\SInjL e' : T,s'}}}{\Ss{\c{e,s}}{\c{e',s'}}}{}$
-\item[] $\reg[InjRS]{\Ss{\c{\SInjR e : T,s}}{\c{\SInjR e' : T,s'}}}{\Ss{\c{e,s}}{\c{e',s'}}}{}$
+\item[] $\reg[InjLS]{\Ss{\c{\SInjL e : T,\sigma}}{\c{\SInjL e' : T,\sigma'}}}{\Ss{\c{e,\sigma}}{\c{e',\sigma'}}}{}$
+\item[] $\reg[InjRS]{\Ss{\c{\SInjR e : T,\sigma}}{\c{\SInjR e' : T,\sigma'}}}{\Ss{\c{e,\sigma}}{\c{e',\sigma'}}}{}$
 
-\item[] $\reg[matchS]{\begin{array}{l}\c{\Smatch e \Swith {\SInjL (x:T_1) \rightarrow e_1} \mid {\SInjR (y:T_2) \rightarrow e_2},s} \rightarrow \\ \c{\Smatch e' \Swith {\SInjL (x:T_1) \rightarrow e_1} \mid {\SInjR (y:T_2) \rightarrow e_2},s'}\end{array}}{\Ss{\c{e,s}}{\c{e',s'}}}{}$
+\item[] $\reg[matchS]{\begin{array}{l}\c{\Smatch e \Swith {\SInjL (x:T_1) \rightarrow e_1} \mid {\SInjR (y:T_2) \rightarrow e_2},\sigma} \rightarrow \\ \c{\Smatch e' \Swith {\SInjL (x:T_1) \rightarrow e_1} \mid {\SInjR (y:T_2) \rightarrow e_2},\sigma'}\end{array}}{\Ss{\c{e,\sigma}}{\c{e',\sigma'}}}{}$
 
-\item[] $\reg[matchL]{\Ss{\c{\Smatch {\SInjL v : T} \begin{array}[t]{@{\;}c@{\;}l@{\;}}\Swith& {\SInjL (x:T_1) \rightarrow e_1}\\  \mid & {\SInjR (y:T_2) \rightarrow e_2}\end{array},s}}{\c{\substapp{e_1}{\subst{\substpair{v}{x}}},s}}}{}{}$
+\item[] $\reg[matchL]{\Ss{\c{\Smatch {\SInjL v : T} \begin{array}[t]{@{\;}c@{\;}l@{\;}}\Swith& {\SInjL (x:T_1) \rightarrow e_1}\\  \mid & {\SInjR (y:T_2) \rightarrow e_2}\end{array},\sigma}}{\c{\substapp{e_1}{\subst{\substpair{v}{x}}},\sigma}}}{}{}$
 
-\item[] $\reg[matchR]{\Ss{\c{\Smatch {\SInjR v : T} \begin{array}[t]{@{\;}c@{\;}l@{\;}}\Swith& {\SInjL (x:T_1) \rightarrow e_1}\\  \mid & {\SInjR (y:T_2) \rightarrow e_2}\end{array},s}}{\c{\substapp{e_2}{\subst{\substpair{v}{y}}},s}}}{}{}$
+\item[] $\reg[matchR]{\Ss{\c{\Smatch {\SInjR v : T} \begin{array}[t]{@{\;}c@{\;}l@{\;}}\Swith& {\SInjL (x:T_1) \rightarrow e_1}\\  \mid & {\SInjR (y:T_2) \rightarrow e_2}\end{array},\sigma}}{\c{\substapp{e_2}{\subst{\substpair{v}{y}}},\sigma}}}{}{}$
 \end{itemize}
 } 
 \end{block}
@@ -352,13 +352,13 @@ $\reg[tRecord]{\tjud{\{{\it et}_1 = e_1;\cdots;{\it et}_n = e_n\}}{\{{\it et}_1 
 \item[] 
 $\Val \mathrel{::=} \terminal{\{} \Eticheta \terminal{=} \Val \terminal{;} \cdots \terminal{;} \Eticheta \terminal{=} \Val \terminal{\}}$
 
-\vitem[] $\reg[recordS]{\begin{array}{ll}&\c{\{{\it et}_1 = v_1;\ldots;{\it et}_{i-1}=v_{i-1};{\it et}_i = e_i;\ldots;{\it et}_{n}=e_{n}\},s}\\\rightarrow&\c{\{{\it et}_1 = v_1;\ldots;{\it et}_{i-1}=v_{i-1};{\it et}_i = e_i';\ldots;{\it et}_{n}=e_{n}\},s'}\end{array}}{\Ss{\c{e_i,s}}{\c{e_i',s'}}}{}$
+\vitem[] $\reg[recordS]{\begin{array}{ll}&\c{\{{\it et}_1 = v_1;\ldots;{\it et}_{i-1}=v_{i-1};{\it et}_i = e_i;\ldots;{\it et}_{n}=e_{n}\},\sigma}\\\rightarrow&\c{\{{\it et}_1 = v_1;\ldots;{\it et}_{i-1}=v_{i-1};{\it et}_i = e_i';\ldots;{\it et}_{n}=e_{n}\},\sigma'}\end{array}}{\Ss{\c{e_i,\sigma}}{\c{e_i',\sigma'}}}{}$
 
 Evaluez un pas o expresie etichetată dacă toate expresiile etichetate dinaintea ei sunt deja valori.
 
-\vitem[] $\reg[fieldS]{\Ss{\c{e.{\it et},s}}{\c{e'.{\it et},s'}}}{\Ss{\c{e,s}}{\c{e',s'}}}{}$
+\vitem[] $\reg[fieldS]{\Ss{\c{e.{\it et},\sigma}}{\c{e'.{\it et},\sigma'}}}{\Ss{\c{e,\sigma}}{\c{e',\sigma'}}}{}$
 
-\vitem[] $\reg[field]{\Ss{\c{\{{\it et}_1 = v_1;\ldots;{\it et}_i = v_i;\ldots;{\it et}_{n}=v_{n}\}.{\it et}_i,s}}{\c{v_i,s}}}{}{}$ 
+\vitem[] $\reg[field]{\Ss{\c{\{{\it et}_1 = v_1;\ldots;{\it et}_i = v_i;\ldots;{\it et}_{n}=v_{n}\}.{\it et}_i,\sigma}}{\c{v_i,\sigma}}}{}{}$ 
 
 Când toate expresiile sunt evaluate o aleg pe cea cu eticheta cerută.
 

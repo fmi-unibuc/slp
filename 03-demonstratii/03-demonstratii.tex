@@ -1,10 +1,10 @@
 \documentclass[xcolor=pdftex,romanian,colorlinks]{beamer}
 
 \usepackage{../tslides}
+\usepackage{adjustbox}
 
-
-\usepackage{tkz-graph}
-
+% \usepackage{tkz-graph}
+\newcommand{\arboreT}[2]{\begin{minipage}{\widthof{#1}}#1\end{minipage}\begin{minipage}{2em}: #2\end{minipage}}
 
 %\newlength{\deltay}
 %\setlength{\deltay}{1em}
@@ -87,19 +87,102 @@
   \titlepage
 \end{frame}
 
+\begin{section}{Demonstrații}
+
+
+\begin{frame}{Ce este o demonstrație?}
+\begin{block}{O demonstrație formală}
+\begin{itemize}
+\item O derivare a concluziei din premize folosind \structure{logică formală}
+\item Greu de scris de mână dar ușor de verificat automat
+\item Exemplu: (în cursul acesta)
+\end {itemize}
+\end{block}
+\begin{block}{O demonstrație informală, dar riguroasă}
+\begin{itemize}
+\item Noțiunea uzuală de demonstrație matematică
+\item Un argument cu \structure{suficiente} detalii pentru a convinge că poate fi transformat într-o demonstrație formală
+\end {itemize}
+\end{block}
+\begin{block}{Apă de ploaie}
+Orice nu se încadrează în cele două cazuri de mai sus.
+\url{http://jwilson.coe.uga.edu/EMT668/EMAT6680.F99/Challen/proof/proof.html}
+\end {block}
+\end{frame}
+
+\begin{frame}{De ce demonstrăm lucruri „evidente“?}
+\begin{itemize}
+\item<1-> O demonstrație ne poate arăta \structure{de ce} e evidentă o afirmație
+\vitem<2-> Uneori afirmațiile evidente se dovedesc a fi \alert{false}
+\begin{itemize}
+\item<3-> O demonstrație ne poate ajuta să descoperim ipoteze lipsă
+\end{itemize}
+\vitem<4-> Uneori afirmațiile evidente nu sunt deloc evidente
+\begin{itemize}
+\item<4-> E.g., Conjectura lui Kepler, teorema celor 4 culori
+\end{itemize}
+\vitem<5-> Demonstrațiile constructive pot conduce la metode algoritmice
+\end{itemize}
+\end{frame}
+
+
+\begin{subsection}{Formalizare}
+\begin{frame}{Cum demonstrăm formal o proprietate?}
+\begin{block}{Evaluarea expresiilor aritmetice}
+Orice expresie aritmetică în IMP se evaluează folosind mașina SMC la un rezultat întreg
+\begin{itemize}
+\item depinzând (doar) de starea memoriei
+\item Într-un număr finit de pași
+\item Fără a modifica restul configurației
+\end{itemize}
+\end{block}
+
+\onslide<2>
+\only<beamer|handout>{
+\begin{theorem}
+Pentru orice expresie aritmetică $E$ în IMP și pentru  orice configurație $\c{c,r,s}$ a mașinii SMC în care $s$ e definită pentru toate locațiile lui $E$, există un număr întreg $n$ astfel încât 
+$$\c{E\cdot c,  r, s} \longrightarrow^\ast \c{c, n\cdot r, s}$$
+\end{theorem}}
+\end{frame}
+
+\begin{frame}{Inducție?}
+\begin{theorem}
+Pentru orice expresie aritmetică $E$ în IMP și pentru  orice configurație $\c{c,r,s}$ a mașinii SMC în care $s$ e definită pentru toate locațiile lui $E$, există un număr întreg $n$ astfel încât 
+$$\c{E\cdot c,  r, s} \longrightarrow^\ast \c{c, n\cdot r, s}$$
+\end{theorem}
+
+\begin{block}{Demonstrație (Ciornă)}
+Inducție după "structura" lui $E$
+\begin{itemize}
+\item Ce înseamnă structura lui $E$?
+\item Pot face inducție după ea?
+\end{itemize}
+\end{block}
+\end{frame}
+
+\end{subsection}
+\end{section}
+
 
 \begin{frame}{Ce este o expresie/program IMP?}
 Am zis că mulțimea expresiilor IMP este definită de următoarea sintaxă:
+\vspace{-5ex}\begin{syntaxBlock}{\AExp}
 \alert{
-\begin{syntaxBlock}{\Exp}
 \begin{itemize}
 \item[]\renewcommand{\syntaxKeyword}{}
-\syntax{\Int\Smid\Bool \Smid {\Exp}\op {\Exp} \Smid\Sif\Exp\Sthen \Exp\Selse\Exp  }{}
-\syntaxCont{\terminal{!}\Loc \Smid \Loc \terminal{:=} \Exp}{}
-\syntaxCont{\Sskip \Smid  \Exp\terminal{;}\Exp \Smid \Swhile \Exp\Sdo \Exp \Sdone}{}
+\syntax{\Int\Smid\terminal{!}\Id \Smid \AExp\iop \AExp}{}
+\item[]\renewcommand{\defSort}{\BExp}
+\syntax{\Bool \Smid \AExp\bop \AExp}{}
+%\item[]\renewcommand{\defSort}{\Block}
+%\syntax{\terminal{\{}\Stmt\terminal{\}} \Smid \terminal{\{}\terminal{\}}}{} 
+\item[]\renewcommand{\defSort}{\Stmt}
+\syntax{\Sskip \Smid \Id \terminal{:=} \AExp \Smid  \Stmt\terminal{;}\Stmt}{}
+\syntaxCont{\Sif\BExp\Sthen \Block\Selse\Block \Smid \Swhile \BExp\Sdo \Block}{}
+\item[]\renewcommand{\defSort}{\Pgm}
+\syntax{\AExp \Smid \BExp \Smid \Stmt}{} 
 \end{itemize}
-\end{syntaxBlock}
 }
+\end{syntaxBlock}
 
 Cum interpretăm/cum reprezentăm ca obiect matematic expresia:
 
@@ -218,7 +301,7 @@ Cum interpretăm/cum reprezentăm ca obiect matematic expresia:
 \begin{itemize}
 \item Pune în evidența structura: fiecare subarbore corespunde unei expresii
 \item Ignoră detaliile „gramaticale“
-\item Fiecare nod corespunde unei producții a lui \structure{e} din gramatica dată
+\item Fiecare nod corespunde unei producții din gramatica dată
 \end{itemize}
 \end{frame}
 
@@ -273,6 +356,108 @@ Cum interpretăm/cum reprezentăm ca obiect matematic expresia:
 
 \begin{subsection}{Tip abstract de date}
 
+\begin{frame}[fragile]{\only<beamer|handout>{Tip abstract de date}}{Reprezentăm programele ca termeni algebrici}
+\begin{block}{Signatură algebrică (în Haskell)}
+\begin{asciihs}
+  data IExp = Int Int                  -- integer injection
+            | Iop Iop IExp IExp        -- integer operation 
+            | Loc Loc                  -- location !
+
+  data BExp = Bool Bool                -- boolean injection
+            | Bop Bop IExp IExp        -- integer comparison 
+
+  data Cmd  = skip                     -- skip
+            | Seq Cmd Cmd              -- seq composition ;
+            | Asgn Loc IExp            -- assignment :=
+            | If BExp Cmd Cmd          -- conditional
+            | While BExp Cmd           -- while loop
+\end{asciihs}
+\end{block} 
+\end{frame}
+
+\begin{frame}[fragile]{\only<beamer|handout>{Tip abstract de date}}{Reprezentăm programele ca termeni algebrici}
+\begin{block}{Signatură algebrică (în Maude)}
+\begin{asciik}
+  sorts IExp BExp Cmd . 
+  op int : Int -> IExp .               --- integer injection
+  op iop : Iop IExp IExp -> IExp .     --- integer operation 
+  op loc : Loc -> IExp .               --- location !
+  op bool : Bool -> BExp .             --- boolean injection
+  op bop : Bop IExp IExp -> BExp .     --- integer comparison 
+  op skip : -> Cmd .                   --- skip
+  op seq : Cmd Cmd -> Cmd .            --- seq composition ;
+  op asgn : Loc IExp -> Cmd .          --- assignment :=
+  op if : BExp Cmd Cmd -> Cmd .        --- conditional
+  op while : BExp Cmd -> Cmd .         --- while loop
+\end{asciik}
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Reprezentarea AST ca termen}
+\begin{block}{Program\hspace{8em} Termen AST în Haskell}
+\begin{minipage}{.3\columnwidth}
+\begin{asciic}
+ x := 10 ;
+(sum := 0 ;
+ while (0 <= !x)  do 
+   (sum := !sum + !x ;
+    x := !x - 1
+   )
+ )
+\end{asciic}
+\end{minipage}\hfill
+\begin{minipage}{.7\columnwidth}
+\footnotesize
+\begin{verbatim}
+ Seq (Asgn "x" (Int 10))
+(Seq (Asgn "sum" (Int 0))
+     (While (Bop "<=" (Int 0) (Loc "x""))
+      (Seq (Asgn "sum" (Iop "+" (Loc "sum") (Loc "x")))
+             (Asgn "x" (Iop "-" (Loc "x") (Int 1)))
+       )))
+\end{verbatim}
+\end{minipage}
+\end{block}
+\begin{itemize}
+\item Pentru a ușura notația lucrăm cu reprezentarea sintactică (stânga)
+\item Folosim paranteze pentru dezambiguizare
+\item Asociem (mental) fiecărei fraze program termenul AST corespunzător
+\item Identificăm termenul AST cu arborele asociat
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Reprezentarea AST ca termen}
+\begin{block}{Program\hspace{8em} Termen AST în Maude}
+\begin{minipage}{.3\columnwidth}
+\begin{asciic}
+ x := 10 ;
+(sum := 0 ;
+ while (0 <= !x)  do 
+   (sum := !sum + !x ;
+    x := !x - 1
+   )
+ )
+\end{asciic}
+\end{minipage}\hfill
+\begin{minipage}{.64\columnwidth}
+\footnotesize
+\begin{verbatim}
+ seq(asgn(x,int(10)),
+ seq(asgn(sum,int(0)),
+     while(bop(<=, int(0), loc(x)),
+       seq(asgn(sum, iop(+, loc(sum), loc(x))),
+           asgn(x, iop(-, loc(x), int(1)))
+       ))
+ ))
+\end{verbatim}
+\end{minipage}
+\end{block}
+\end{frame}
+
+\end{subsection}
+\end{section}
+
+
 %\begin{frame}[fragile]{Tip abstract de date pentru sintaxă}{Reprezentare în OCaml}
 %\begin{asciiml}
 %type l = string
@@ -293,45 +478,45 @@ Cum interpretăm/cum reprezentăm ca obiect matematic expresia:
 %  | If of e * e * e                   (*   | if e then e else e  *)
 %\end{asciiml}
 %\end{frame}
-
-\begin{frame}[fragile]{Reprezentarea AST ca termen}
-\begin{block}{Program\hspace{5em} Arbore de sintaxă (Reprezentare în OCaml)}
-\begin{minipage}{.25\columnwidth}
-\begin{asciic}
-( x := 10) ;
-((sum := 0) ;
- while (1 <= !x)  
- do 
-   (sum := (!sum + !x)) ;
-   (x := (!x + -1))
- done
- )
-\end{asciic}
-\end{minipage}\hfill
-\begin{minipage}{.7\columnwidth}
-\footnotesize
-\begin{asciiml}
- Seq(Atrib("x",Int(10)),
- Seq(Atrib("sum",Int(0)),
-     While(Op(Int(0), Mic, Loc("x")),
-       Seq(Atrib("sum", Op(Loc("sum"), Plus, Loc("x"))),
-           Atrib("x", Op(Loc(x), Plus, Int(-1)))
-       ))
- ))
-\end{asciiml}
-\end{minipage}
-\end{block}
-\begin{itemize}
-\item Pentru a ușura notația lucrăm cu reprezentarea sintactică (stânga)
-\item Folosim paranteze pentru dezambiguizare
-\item Asociem (mental) fiecărei fraze program termenul AST corespunzător
-\item Identificăm termenul AST cu arborele asociat
-\end{itemize}
-\end{frame}
-\end{subsection}
-\end{section}
-
-
+%
+%\begin{frame}[fragile]{Reprezentarea AST ca termen}
+%\begin{block}{Program\hspace{5em} Arbore de sintaxă (Reprezentare în OCaml)}
+%\begin{minipage}{.25\columnwidth}
+%\begin{asciic}
+%( x := 10) ;
+%((sum := 0) ;
+% while (1 <= !x)  
+% do 
+%   (sum := (!sum + !x)) ;
+%   (x := (!x + -1))
+% done
+% )
+%\end{asciic}
+%\end{minipage}\hfill
+%\begin{minipage}{.7\columnwidth}
+%\footnotesize
+%\begin{asciiml}
+% Seq(Atrib("x",Int(10)),
+% Seq(Atrib("sum",Int(0)),
+%     While(Op(Int(0), Mic, Loc("x")),
+%       Seq(Atrib("sum", Op(Loc("sum"), Plus, Loc("x"))),
+%           Atrib("x", Op(Loc(x), Plus, Int(-1)))
+%       ))
+% ))
+%\end{asciiml}
+%\end{minipage}
+%\end{block}
+%\begin{itemize}
+%\item Pentru a ușura notația lucrăm cu reprezentarea sintactică (stânga)
+%\item Folosim paranteze pentru dezambiguizare
+%\item Asociem (mental) fiecărei fraze program termenul AST corespunzător
+%\item Identificăm termenul AST cu arborele asociat
+%\end{itemize}
+%\end{frame}
+%\end{subsection}
+%\end{section}
+%
+%
 %\begin{subsection}{Aplicații}
 %\begin{frame}<handout:0|article:0>{Inducție structurală}{Exemplu}
 %\begin{theorem}
@@ -453,7 +638,7 @@ Cum interpretăm/cum reprezentăm ca obiect matematic expresia:
       \end{itemize}
   \end{block}
   \begin{block}{Limbajul descris de o gramatică \hfill 
-\begin{minipage}{.35\columnwidth} \renewcommand{\syntaxKeyword}{}\syntax[\Exp]{\Int\Smid\terminal{!}\Loc \Smid \Exp\op \Exp}{}\end{minipage}}
+\begin{minipage}{.35\columnwidth} \renewcommand{\syntaxKeyword}{}\syntax[\AExp]{\Int\Smid\terminal{!}\Loc \Smid \AExp\iop \AExp}{}\end{minipage}}
      \begin{itemize}
 	 \item Orice număr întreg $n$ este expresie
          \item Pentru orice locație $l$, $\mathrel{!} l$ este expresie
@@ -515,16 +700,6 @@ Regulile de deducție asociate schemei sunt  instanțe ale acesteia
 \item[]              \structure{Regulă:} \hfill $\displaystyle\reg[op]{e_1 \mathrel{o} e_2}{e_1\si  e_2}{o \in \{+,\leq\}}$\hfill\;
 \end{itemize}
        \end{block}
-\end{frame}
-
-\begin{frame}{Exemplu}{Semantica tranzițională}
-Semantica tranzițională este dată de un sistem de scheme de reguli
-\begin{itemize}
-\item Care definesc recursiv relația de tranziție într-un pas $\longrightarrow$
-\item Ca submulțime a lui ${\it Config}\times {\it Config}$
-\item Exemplu de schemă de reguli:
-\[\reg[OpS]{\Ss{\c{e_1 \mathrel{o} e_2,s}}{\c{e_1'\mathrel{o}e_2,s'}}}{\Ss{\c{e_1,s}}{\c{e_1',s'}}}{}\]
-\end{itemize}
 \end{frame}
 
 \begin{frame}{Demonstrații deductive}{Prezentare ca arbori}
@@ -612,9 +787,6 @@ Demonstrăm teorema precedentă folosind prezentarea arborescentă.
 \end{proof}
 \end{frame}
 
-
-
-
 \end{section}
 
 
@@ -697,51 +869,62 @@ $(((\forall h\in\emptyset.P(h)) \implies P(0))\wedge\forall n\in\Nat.((\forall h
 
 \begin{frame}{Arbori de sintaxă}
 \begin{block}{Sintaxă}
+\vspace{-5ex}\begin{syntaxBlock}{\AExp}
 \alert{
-\begin{syntaxBlock}{\Exp}
-\renewcommand{\syntaxKeyword}{}
-\syntax{\Int\Smid\Bool \Smid {\Exp}\op {\Exp} \Smid\Sif\Exp\Sthen \Exp\Selse\Exp  }{}
-\syntaxCont{\terminal{!}\Loc \Smid \Loc \terminal{:=} \Exp}{}
-\syntaxCont{\Sskip \Smid  \Exp\terminal{;}\Exp \Smid \Swhile \Exp\Sdo \Exp \Sdone}{}
-\end{syntaxBlock}
+\begin{itemize}
+\item[]\renewcommand{\syntaxKeyword}{}
+\syntax{\Int\Smid\terminal{!}\Id \Smid \AExp\iop \AExp}{}
+\item[]\renewcommand{\defSort}{\BExp}
+\vspace{-3ex}\syntax{\Bool \Smid \AExp\bop \AExp}{}
+%\item[]\renewcommand{\defSort}{\Block}
+%\syntax{\terminal{\{}\Stmt\terminal{\}} \Smid \terminal{\{}\terminal{\}}}{} 
+\item[]\renewcommand{\defSort}{\Stmt}
+\vspace{-3ex}\syntax{\Sskip \Smid \Id \terminal{:=} \AExp \Smid  \Stmt\terminal{;}\Stmt}{}
+\syntaxCont{\Sif\BExp\Sthen \Block\Selse\Block \Smid \Swhile \BExp\Sdo \Block}{}
+\item[]\renewcommand{\defSort}{\Pgm}
+\vspace{-3ex}\syntax{\AExp \Smid \BExp \Smid \Stmt}{} 
+\end{itemize}
 }
+\end{syntaxBlock}
+\vspace{-2ex}
 \end{block}
 
 \begin{block}{Univers}
-Totalitatea arborilor cu etichete din mulțimea:
+Fie $\mathbb{A}$ totalitatea arborilor cu etichete din mulțimea:
+\vspace{-2ex}
 \[\begin{array}{r@{\;}l}\mathbb{E} = & \{n\mid n\in\mathbb{Z}\} \cup \{\Strue, \Sfalse\}\cup \{\_+\_, \_\leq\_\} \cup \{\Sif\_\Sthen\_\Selse\_\}
 \\ 
 \cup &
 \{! l \mid l\in  \mathbb{L}\}\cup \{l :=\_\mid l\in \mathbb{L}\}
-\\
-\cup &
-\{\Sskip, \_;\_, \Swhile\_\Sdo\_\Sdone\}
+\cup
+\{\Sskip, \_;\_, \Swhile\_\Sdo\_\}
 \end{array}\]
-\end{block}
 
-\begin{block}{Arbori abstracți de sintaxă}
-Definiți recursiv ca submulțime a arborilor de mai sus
+Definim universul $\mathbb{U} = \mathbb{A} \times \{E, B, C, P\}$ și notăm $a : t$ pentru $(a, t) \in \mathbb{U}$.
+\end{block} 
+
+\begin{block}{Arbori abstracți de sintaxă (și tipul lor)}
+Definiți recursiv ca submulțime universului definit mai sus
 \end{block}
 \end{frame}
 
 \begin{frame}
 {Reguli de formare a arborilor abstracți de sintaxă}
 
-$\reg[sN]{\displaystyle n}{}{n\in \mathbb{Z}}$
-\hfill $\reg[sB]{\displaystyle b}{}{b\in \{\Strue, \Sfalse\}}$
+$\reg[sN]{\displaystyle n : E}{}{n\in \mathbb{Z}}$
+\hfill $\reg[sB]{\displaystyle b : B}{}{b\in \{\Strue, \Sfalse\}}$
 
-\vfill$\reg[sSkip]{\displaystyle \Sskip}{}{}$
-\hfill$\reg[sLoc]{\displaystyle !l}{}{l\in \mathbb{L}}$
+\vfill$\reg[s+]{\arboreT{\arbore{$\_+\_$}{$e_1$}{}{$e_2$}}{E}}{\displaystyle a_1 : E \si a_2 : E}{}$
+\hfill$\reg[s<=]{\arboreT{\arbore{$\_\mathrel{<=}\_$}{$e_1$}{}{$e_2$}}{E}}{\displaystyle a_1 : E \si a_2 : E}{}$
 
-\vfill $\reg[sAtrib]{\mbox{\arbore{l := \_}{}{e}{}}}{\displaystyle e}{l\in \mathbb{L}}$
+\vfill $\reg[sAtrib]{\arboreT{\arbore{l := \_}{}{a}{}}{C}}{\displaystyle a : E}{l\in \mathbb{L}}$
+\hfill$\reg[sLoc]{\displaystyle !l : E}{}{l\in \mathbb{L}}$
 
-\vfill$\reg[sOp]{\mbox{\arbore{$\_\mathrel{o}\_$}{$e_1$}{}{$e_2$}}}{\displaystyle e_1 \si e_2}{o \in \{+,\leq\}}$
+\vfill$\reg[sSecv]{\arboreT{\arbore{\_;\_}{$e_1$}{}{$e_2$}}{C}}{\displaystyle e_1 : C \si e_2 : C}{}$
+\hfill$\reg[sSkip]{\displaystyle \Sskip : C}{}{}$
 
-
-\vfill$\reg[sSecv]{\mbox{\arbore{\_;\_}{$e_1$}{}{$e_2$}}}{\displaystyle e_1 \si e_2}{}$
-\hfill $\reg[sWhile]{\mbox{\arbore{$\Swhile\_\Sdo\_\Sdone$}{$e_1$}{}{$e_2$}}}{\displaystyle e_1 \si e_2}{}$
-
- \vfill $\reg[sIf]{\mbox{\arbore{$\Sif\_\Sthen\_\Selse\_$}{$e_1$}{$e_2$}{$e_3$}}}{\displaystyle e_1 \si e_2 \si e_3}{}$\hfill\;
+ \vfill $\reg[sIf]{\arboreT{\arbore{$\Sif\_\Sthen\_\Selse\_$}{$a_1$}{$a_2$}{$a_3$}}{C}}{\displaystyle a_1 : B \si a_2 : C\si a_3 : C}{}$
+\hfill $\reg[sWhile]{\arboreT{\arbore{$\Swhile\_\Sdo\_\Sdone$}{$a_1$}{}{$a_2$}}{C}}{\displaystyle a_1 : B \si a_2 : C}{}$
 
 \end{frame}
 
@@ -819,47 +1002,118 @@ Demonstrăm că dacă $P(e_1)$, $P(e_2)$ și $P(e_3)$, atunci și
 %\end{block}
 %\end{frame}
 
+\begin{subsection}{Aplicații}
+\begin{frame}<handout:0|article:0>{Inducție structurală}{Exemplu}
+\begin{theorem}
+Pentru orice expresie aritmetică $e$ în IMP și pentru  orice configurație $\c{c,r,s}$ a mașinii SMC în care $s$ e definită pentru toate locațiile lui $e$, există un număr întreg $n$ astfel încât 
+$$\c{e\cdot c,  r, s} \longrightarrow^\ast \c{c, n\cdot r, s}$$
+\end{theorem}
+\begin{block}{Reguli SMC pentru expresii aritmetice $E$ ::= $n \Smid {\mathrel{"!"} l} \Smid E \mathrel{iop} E$}
+$\begin{array}{l@{\extracolsep{1em}}r@{{}\longrightarrow{}}l}
+\mbox{IntCt}&
+\c{n\cdot c,r,s} & \c{c, n \cdot r, s}
+\\[1ex]
+\mbox{Loc}&
+\c{\terminal{!} l\cdot c,r,s} & \c{c, n \cdot r, s}  \Sdaca s(l) = n
+\\[1ex]
+\mbox{IntOpC}&
+\c{(E_1 \iop E_2) \cdot c, r, s} & \c{E_1 \cdot E_2 \cdot \iop \cdot c, r, s}
+\\[1ex]
+\mbox{IntOp}&
+\c{\iop \cdot c, n_2\cdot n_1 \cdot r, s} & \c{c, n \cdot r, s} \Sdaca n_1 \iop n_2 = n
+\end{array}$
+\end{block}
+\end{frame}
+
+\begin{frame}{\only<beamer|handout>{Inducție structurală}}{Exemplu}
+  \setcounter{theorem}{0}
+\begin{theorem}
+Pentru orice expresie aritmetică $e$ în IMP și pentru  orice configurație $\c{c,r,s}$ a mașinii SMC în care $s$ e definită pentru toate locațiile lui $e$, există un număr întreg $n$ astfel încât 
+$$\c{e\cdot c,  r, s} \longrightarrow^\ast \c{c, n\cdot r, s}$$
+\end{theorem}
+
+\begin{block}{Demonstrație (%
+Inducție structurală asupra  lui $e$)\hfill  $E$ ::= $n \Smid {\mathrel{"!"} l} \Smid E \mathrel{iop} E$}
+\onslide<2>
+\begin{enumerate}
+\item \structure{$e = n$}, unde $n$ întreg, atunci aplicăm axioma (IntCt) și avem 
+$\c{n\cdot c,  r, s} \xrightarrow{IntCt} \c{c, n\cdot r, s}$
+\item \structure{$e = \mathop{!} l$}, unde $l$ locație, atunci aplicăm axioma (Loc) și avem 
+$\c{! l\cdot c,  r, s} \xrightarrow{Loc} \c{c, n\cdot r, s}$, unde $n=s(l)$ există  ($s$ definit pentru $l$)
+\end{enumerate}
+\end{block}
+\end{frame}
+
+\begin{frame}<handout:0|article:0>{Inducție structurală}{Exemplu}
+\begin{theorem}
+Pentru orice expresie aritmetică $e$ în IMP și pentru  orice configurație $\c{c,r,s}$ a mașinii SMC în care $s$ e definită pentru toate locațiile lui $e$, există un număr întreg $n$ astfel încât 
+$$\c{e\cdot c,  r, s} \longrightarrow^\ast \c{c, n\cdot r, s}$$
+\end{theorem}
+\begin{block}{Reguli SMC pentru expresii  aritmetice $E$ ::= $n \Smid {\mathrel{"!"} l} \Smid E \mathrel{iop} E$}
+$\begin{array}{l@{\extracolsep{1em}}r@{{}\longrightarrow{}}l}
+\mbox{IntCt}&
+\c{n\cdot c,r,s} & \c{c, n \cdot r, s}
+\\[1ex]
+\mbox{Loc}&
+\c{\terminal{!} l\cdot c,r,s} & \c{c, n \cdot r, s}  \Sdaca s(l) = n
+\\[1ex]
+\mbox{IntOpC}&
+\c{(E_1 \iop E_2) \cdot c, r, s} & \c{E_1 \cdot E_2 \cdot \iop \cdot c, r, s}
+\\[1ex]
+\mbox{IntOp}&
+\c{\iop \cdot c, n_2\cdot n_1 \cdot r, s} & \c{c, n \cdot r, s} \Sdaca n_1 \iop n_2 = n
+\end{array}$
+\end{block}
+\end{frame}
+
+
+
+\begin{frame}{\only<beamer|handout>{Inducție structurală}}{\only<beamer|handout>{Exemplu}}
+\only<beamer|handout>{
+\begin{theorem}
+Pentru orice expresie aritmetică $e$ în IMP și pentru  orice configurație $\c{c,r,s}$ a mașinii SMC în care $s$ e definită pentru toate locațiile lui $e$, există un număr întreg $n$ astfel încât 
+$$\c{e\cdot c,  r, s} \longrightarrow^\ast \c{c, n\cdot r, s}$$
+\end{theorem}}
+
+\begin{block}{\only<beamer|handout>{Demonstrație (%
+Inducție structurală asupra  lui $e$)\hfill  $E$ ::= $n \Smid {\mathrel{"!"} l} \Smid E \mathrel{iop} E$}}
+\begin{enumerate}
+  \setcounter{enumi}{2}
+  \item 
+\structure{$e = e_1 \iop e_2$}, unde $e_1, e_2$ expresii
+\onslide<2>
+\begin{itemize}
+\item $\c{(e_1 \iop e_2) \cdot c, r, s}  \xrightarrow{IntOpC} \c{e_1 \cdot e_2 \cdot \iop \cdot c, r, s}$
+\item $\c{e_1 \cdot e_2 \cdot \iop \cdot c, r, s} \longrightarrow^\ast \c{e_2 \cdot \iop \cdot c, n_1 \cdot r, s}$ \hfill (ip. inducție)
+\item $\c{e_2 \cdot \iop \cdot c, n_1 \cdot r, s}  \longrightarrow^\ast \c{\iop \cdot c, n_2 \cdot n_1 \cdot r, s} $ \hfill (ip. inducție)
+\item $\c{\iop \cdot c, n_2 \cdot n_1 \cdot r, s}\xrightarrow{IntOp} \c{c, n \cdot r, s}$, unde $n_1 \iop n_2 = n$
+\end{itemize}
+\end{enumerate}
+\end{block}
+\end{frame}
+
+\begin{frame}{Ce putem/vrem să mai demonstrăm}
+\begin{block}{Evaluarea expresiilor booleene}
+Orice expresie booleană în IMP se evaluează folosind mașina SMC la un rezultat boolean
+\begin{itemize}
+\item depinzând (doar) de starea memoriei
+\item Într-un număr finit de pași
+\item Fără a modifica restul configurației
+\end{itemize}
+\end{block}
+\begin{block}{Evaluarea instrucțiunilor simple}
+Orice program IMP care nu conține while se termină
+\begin{itemize}
+\item Modificând doar conținutul memoriei
+\end{itemize}
+\end{block}
+
+\end{frame}
+
+\end{subsection}
 \end{section}
 
-
-
-\begin{section}{Demonstrații}
-
-
-\begin{frame}{Ce este o demonstrație?}
-\begin{block}{O demonstrație formală}
-\begin{itemize}
-\item O derivare a concluziei din premize folosind logică formală
-\item Exemplu: un arbore de demonstrație
-\item Greu de scris de mână dar ușor de verificat automat
-\end {itemize}
-\end{block}
-\begin{block}{O demonstrație informală, dar riguroasă}
-\begin{itemize}
-\item Noțiunea uzuală de demonstrație matematică
-\item Un argument cu \structure{suficiente} detalii pentru a convinge că poate fi transformat într-o demonstrație formală
-\end {itemize}
-\end{block}
-\begin{block}{Apă de ploaie}
-Orice nu se încadrează în cele două cazuri de mai sus.
-\end {block}
-\end{frame}
-
-\begin{frame}{De ce demonstrăm lucruri „evidente“?}
-\begin{itemize}
-\item<1-> O demonstrație ne poate arăta \structure{de ce} e evidentă o afirmație
-\vitem<2-> Uneori afirmațiile evidente se dovedesc a fi \alert{false}
-\begin{itemize}
-\item<3-> O demonstrație ne poate ajuta să descoperim ipoteze lipsă
-\end{itemize}
-\vitem<4-> Uneori afirmațiile evidente nu sunt deloc evidente
-\begin{itemize}
-\item<4-> E.g., Conjectura lui Kepler, teorema celor 4 culori
-\end{itemize}
-\vitem<5-> Demonstrațiile constructive pot conduce la metode algoritmice
-\end{itemize}
-\end{frame}
-
+\end{document}
 
 
 \begin{subsection}{Inducție structurală pe tipul expresiilor}

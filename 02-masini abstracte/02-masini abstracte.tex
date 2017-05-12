@@ -1,0 +1,435 @@
+\documentclass[handout,xcolor=pdftex,romanian,colorlinks]{beamer}
+\usepackage{../tslides}
+
+\title[SLP---Mașini Abstracte]{Semantica Limbajelor de Programare}
+\subtitle{Sisteme de tranziție, Sintaxă abstractă, mașină de execuție abstractă}
+\begin{document}
+\maketitle
+
+%!TEX root = 02-masini abstracte.tex
+
+\begin{section}{IMP}
+\begin{frame}[fragile]{Limbajul IMP}
+IMP este un limbaj \structure{IMP}erativ foarte simplu.
+\begin{block}{Ce conține}
+\begin{minipage}{.49\columnwidth}
+\begin{itemize}
+\vitem Expresii
+\begin{itemize}
+  \item Aritmetice%\hfill $x + 3$
+  \item Booleene%\hfill $\Snot(x > 7)$
+\end{itemize}
+\vitem Comenzi
+\begin{itemize}
+  \item De atribuire%\hfill $x = 5;$ 
+  \item Condiționale%\hfill $\Sif(x > 7)\; \{x =5; \} \Selse \{x = 0;\}$
+  \item De ciclare  %\hfill$\Swhile (x > 7)\; \{x = x - 1;\}$
+\end{itemize}
+\end{itemize}
+\end{minipage}
+\begin{minipage}{.49\columnwidth}
+\begin{asciic}
+ x := 10 ;
+(sum := 0 ;
+ while (0 <= !x)  do 
+   (sum := !sum + !x ;
+    x := !x - 1
+   )
+)
+\end{asciic}
+\end{minipage}
+\end{block}
+\begin{block}{Ce nu conține}
+\begin{itemize}
+\item Expresii cu efecte laterale
+\item Proceduri și funcții
+\item Schimbări abrupte de control
+\end{itemize}
+\end{block}
+\end{frame}
+
+ \begin{frame}{Sintaxă formală}{Backus Naur Form}
+  \begin{itemize}
+   \item Pentru gramatici (generative) independente de context
+   \item Producții
+       --- generează termeni prin expandare (rescriere)
+
+\alert{\renewcommand{\syntaxKeyword}{}\syntax[\Stmt]{\color{black}\Sif\;\BExp\Sthen\Block\Selse\Block}{}
+	\syntaxCont[\Stmt]{\color{black}\Id \terminal{:=}\AExp\terminal{;}}{}}
+   \item Categorii sintactice (neterminale) 
+   \begin{itemize}
+    \item descriu tipurile de sintaxă
+     \begin{itemize}
+      \item Tipuri lexicale: 
+		întregi (\structure{n}), booleeni (\structure{b}), locații (\structure{l}),\\
+		simboluri de operații aritmetice (\structure{iop}) sau booleene (\structure{bop}).
+	  \item Tipuri construite (cu majusculă):
+     %$\AExp$ (expr. aritmetice), $\BExp$ (expr. Booleene), \\$\Stmt$ (instrucțiuni), $\Block$ (bloc de instrucțiuni), $\Pgm$ (program)
+     \end{itemize}
+   \end{itemize}
+   \item Cuvinte cheie (terminale, încep cu literă mică sau simboluri)
+   \begin{itemize}
+    \item descriu elementele lexicale: 
+   $\Sif$, $\Sthen$, $\Selse$,  
+   $\Swhile$, $\Sdo$,
+   $\terminal{:=}$, $\terminal{!}$, $\terminal{;}$ \ldots
+   \end{itemize}
+  \end{itemize}
+ \end{frame}
+
+\begin{frame}{Sintaxa BNF a limbajului IMP}
+\vspace{-5ex}\begin{syntaxBlock}{\AExp}
+\alert{
+\begin{itemize}
+\item[]\renewcommand{\syntaxKeyword}{}
+\syntax{\Int\Smid\terminal{!}\Id \Smid \AExp\iop \AExp}{}
+\item[]\renewcommand{\defSort}{\BExp}
+\syntax{\Bool \Smid \AExp\bop \AExp}{}
+%\item[]\renewcommand{\defSort}{\Block}
+%\syntax{\terminal{\{}\Stmt\terminal{\}} \Smid \terminal{\{}\terminal{\}}}{} 
+\item[]\renewcommand{\defSort}{\Stmt}
+\syntax{\Sskip \Smid \Id \terminal{:=} \AExp \Smid  \Stmt\terminal{;}\Stmt}{}
+\syntaxCont{\Sif\BExp\Sthen \Block\Selse\Block \Smid \Swhile \BExp\Sdo \Block}{}
+\item[]\renewcommand{\defSort}{\Pgm}
+\syntax{\AExp \Smid \BExp \Smid \Stmt}{} 
+\item[]\renewcommand{\defSort}{\Id}
+\syntax{\mbox{locație de memorie / variabilă}}{} 
+\\
+\renewcommand{\defSort}{\Int}
+\syntax{\mbox{număr întreg}}{}
+\\
+\renewcommand{\defSort}{\Bool}
+\syntax{\Strue \mid \Sfalse}{}
+\\
+\renewcommand{\defSort}{\iop}
+\syntax{\terminal{+} \Smid \terminal{-}\Smid \ldots}{}
+\renewcommand{\defSort}{\bop}
+\syntax{\terminal{=} \Smid \terminal{<}\Smid \ldots}{}
+%\syntaxCont{\terminal{and} \Smid \terminal{or}\Smid \ldots}{}
+\end{itemize}
+}
+\end{syntaxBlock}
+\end{frame}
+\end{section}
+
+\begin{section}{Sisteme de tranziție}
+\begin{frame}{Semantica Operațională}
+\begin{block}{Scop}
+Descrierea formală a execuției unui sistem.
+\end{block}
+\begin{block}{Idee}
+Execuția unui sistem este capturata de evoluția în timp a stării sistemului
+\end{block}
+\begin{block}{Principii generale}
+\begin{itemize}
+\item Reprezentăm starea sistemului ca un obiect matematic
+\item Reprezentăm evoluția sistemului prin tranziții de la o stare la alta
+\end{itemize}
+\end{block}
+\begin{block}{Formalizare}
+\begin{itemize}
+\item O execuție posibilă: secvență de tranziții între stările sistemului
+\item Spațiul execuțiilor: Sistem de tranziție
+\end{itemize}
+\end{block}
+\end{frame}
+\begin{frame}{Sisteme de tranziție}{}
+\begin{block}{Definiție (Sistem de tranziție)}
+Un sistem de tranziție este dat de 
+\begin{itemize}
+\item O mulțime {\it Config}
+\item O relație „de tranziție“ $\rightarrow \subseteq {\it Config} \times {\it Config}$
+\end{itemize}
+\end{block}
+
+\begin{itemize}
+\item Elementele mulțimii {\it Config} sunt numite \structure{configurații} sau stări
+\item Date fiind două configurații cu $(c,c') \in {\it Config}$ scriem $c \rightarrow c'$ și citim $c$ tranziționează/\structure{se transformă în} $c'$ (într-un pas)
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Definiții derivate}
+\begin{description}
+\vitem[$\rightarrow^\ast$] $c \rightarrow^\ast c'$ dacă $c$ se transformă în $c'$ in zero, unul, sau mai mulți pași (închiderea reflexiv-tranzitivă a relației $\rightarrow$)
+\vitem[$\not\rightarrow$] $c \not\rightarrow$ dacă $c$ nu se poate transforma în nimic altceva.
+\vitem[Determinism] Un sistem se numește determinist dacă relația $\rightarrow$ e injectivă:
+\[\forall c, c_1, c_2\in {\it Config} . c \rightarrow c_1 \wedge c \rightarrow c_2 \implies c_1 = c_2\]
+\end{description}
+\end{frame}
+\end{section}
+
+\begin{section}{Mașina abstractă SMC}
+\begin{frame}{Mașina  \alert{S}tivă--\alert{M}emorie--\alert{C}ontrol  (SMC)}
+\begin{block}{Definiție (Configurații)}
+O configurație SMC e un triplet $\c{c, r, s}$, definită de:
+\begin{itemize}
+\item[C] O stivă de \alert{C}ontrol \structure{c} dată de:
+\renewcommand{\syntaxKeyword}{}
+\syntax[\structure{c}]{\terminal{nil} \Smid \structure{c1} \cdot \structure{c}}{}
+\syntax[\structure{c1}]{P \Smid \iop \Smid \bop \Smid \terminal{:=} \Smid \terminal{if} \Smid \terminal{while}}{}
+\item[S] O \alert{S}tivă de lucru \structure{r}, conținând rezultate (parțiale) dată de:
+\syntax[\structure{r}]{\terminal{nil} \Smid \Pgm \cdot \structure{r} \Smid \Id \cdot \structure{r}}{}
+\item[M] o stare a \alert{M}emoriei \structure{m} care asociază valori întregi locațiilor de memorie
+\end{itemize}
+\end{block}
+\end{frame}
+\begin{frame}{Starea memoriei}
+\begin{block}{}
+Starea memoriei unui program IMP la un moment dat este dată de valorile deținute în acel moment de variabilele declarate de program.
+
+\structure{Matematic:} o funcție \alert{parțială} $s : \Id \xrightarrow{\circ}\SInt$ de domeniu finit.
+\end{block}
+\begin{block}{Notații}
+\begin{itemize}
+\item Descrierea funcției prin enumerare:
+$s = \{ x \mapsto 10, sum \mapsto 0\}$
+\item Funcția vidă $\bottom$, nedefinită pentru nici o variabilă
+\item Obținerea valorii unei variabile: $s(x)$
+\item Suprascrierea valorii unei variabile:
+
+$$s[l\mapsto n] (l') = \left\{\begin{array}{r@{\mbox{, dacă }}l}
+s	(l') & l' \neq l \\
+n & l' = l
+\end{array}
+\right.$$
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}{Reguli de tranziție SMC}{\only<beamer>{Expresii}}
+\begin{block}{Expresii întregi}
+\onslide<2->
+$\begin{array}{l@{\extracolsep{1em}}r@{{}\longrightarrow{}}l}
+\mbox{IntCt}&
+\c{n\cdot c,r,s} & \c{c, n \cdot r, s}
+\\[1ex]
+\mbox{Loc}&
+\c{\terminal{!} l\cdot c,r,s} & \c{c, n \cdot r, s}  \Sdaca s(l) = n
+\\[1ex]
+\mbox{IntOpC}&
+\c{(E_1 \iop E_2) \cdot c, r, s} & \c{E_1 \cdot E_2 \cdot \iop \cdot c, r, s}
+\\[1ex]
+\mbox{IntOp}&
+\c{\iop \cdot c, n_2\cdot n_1 \cdot r, s} & \c{c, n \cdot r, s} \Sdaca n_1 \iop n_2 = n
+\end{array}$
+\end{block}
+\begin{block}{Expresii Boole}
+\onslide<3>
+$\begin{array}{l@{\extracolsep{1em}}r@{{}\longrightarrow{}}l}
+\mbox{BoolCt}&
+\c{b\cdot c,r,s} & \c{c, b \cdot r, s}
+\\[1ex]
+\mbox{BoolOpC}&
+\c{(E_1 \bop E_2) \cdot c, r, s} & \c{E_1 \cdot E_2 \cdot \bop \cdot c, r, s}
+\\[1ex]
+\mbox{BoolOp}&
+\c{\bop \cdot c, n_2\cdot n_1 \cdot r, s} & \c{c, b \cdot r, s} \Sdaca n_1 \bop n_2 = b
+\end{array}$
+\end{block}
+\end{frame}
+
+\begin{frame}{Reguli de tranziție SMC}{}
+\begin{block}{Comenzi}
+\onslide<2>
+$\begin{array}{lr@{{}\rightarrow{}}l}
+\mbox{Skip}&
+\c{\Sskip \cdot c,r,s} & \c{c, r, s}
+\\[1ex]
+\mbox{AtribC}&
+\c{l \terminal{:=} E \cdot c,r,s} & \c{E \cdot \terminal{:=} \cdot c, l \cdot r, s} 
+\\[1ex]
+\mbox{Atrib}&
+\c{\terminal{:=}\cdot c,n \cdot l\cdot r,s} & \c{c, r, s[l\mapsto n]} 
+\\[1ex]
+\mbox{CondC}&
+\c{(\Sif B \Sthen C_1 \Selse C_2) \cdot c, r, s} & \c{B \cdot \Sif \cdot c, C_1 \cdot C_2 \cdot r, s}
+\\[1ex]
+\mbox{CondT}&
+\c{\Sif \cdot c, \Strue \cdot C_1 \cdot C_2 \cdot r, s} & \c{C_1 \cdot c, r, s}
+\\[1ex]
+\mbox{CondF}&
+\c{\Sif \cdot c, \Sfalse \cdot C_1 \cdot C_2 \cdot r, s} & \c{C_2 \cdot c, r, s}
+\\[1ex]
+\mbox{Secv}&
+\c{(C_1 \terminal{;} C_2) \cdot c, r, s} & \c{C_1 \cdot C_2 \cdot c, r, s}
+\end{array}$
+\end{block}
+\end{frame}
+
+\begin{frame}{Reguli de tranziție SMC}{}
+\begin{block}{Definiția informală a lui $\Swhile B \Sdo C$ (Kernighan \& Ritchie)}
+Comanda $C$ se execută în mod repetat cât timp valoarea expresiei B ramâne $\Strue$.  Testul are loc înainte de execuția fiecărei comenzi.
+\end{block}
+
+\begin{block}{Reguli pentru $\Swhile$}
+\onslide<2>
+\[\begin{array}{lr@{{}\rightarrow{}}l}
+\mbox{IterC}&
+\c{(\Swhile B \Sdo C) \cdot c, r, s} & \c{B \cdot \Swhile \cdot c, B \cdot C\cdot r, s}
+\\[1ex]
+\mbox{IterT}&
+\c{\Swhile \cdot c, \Strue \cdot  B \cdot C \cdot r, s} & \c{C \cdot (\Swhile B \Sdo C) \cdot c,  r, s}
+\\[1ex]
+\mbox{IterF}&
+\c{\Swhile \cdot c, \Sfalse \cdot  B \cdot C \cdot r, s} & \c{c,  r, s}
+\end{array}\]
+\end{block}
+\end{frame}
+\begin{subsection}{Execuții folosind SMC}
+
+\begin{frame}{Ce este o execuție?}
+\begin{block}{Execuție}
+E o secvență de tranziții de forma $ci \rightarrow^\ast cf$ unde $ci$ e o configurație inițială și $cf$ e o configurație finală
+\end{block}
+\begin{block}{Configurațiile inițiale}
+Sunt de forma  $\c{C\cdot \Snil, \Snil, s}$ unde $C$ e o instrucțiune și $s$ o stare a memoriei.
+\end{block}
+\begin{block}{Configurațiile finale}
+Sunt de forma  $\c{\Snil, \Snil, s}$ unde $s$ e o stare a memoriei.
+\end{block}
+\begin{block}{Configurațiile blocate}
+Sunt acele configurații $c$ care nu sunt finale și care nu pot tranziționa, i. e.,  $c \not\rightarrow$  
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile]{O execuție}
+
+\begin{minipage}{.35\columnwidth}
+\begin{asciic}
+ while (0 <= !x)  do
+   (sum := !sum + !x ;
+    x := !x - 1)
+\end{asciic}
+\end{minipage}
+\hfill
+\begin{minipage}{.63\columnwidth}
+\begin{tabular}{ll}Fie& $C = {} \Swhile B \Sdo C'$,\\ unde &$B = 0 \terminal{<=} {\terminal{!} {\terminal{x}}}$,\\&$C' = C_1 \terminal{;} C_2$,\\ &$C_1 = {\terminal{sum}} \terminal{:=} {\terminal{!} \terminal{sum}} \terminal{+} {\terminal{!} \terminal{x}}$\\\hfill și & $C_2 =
+{\terminal{x}} \terminal{:=} {\terminal{!} \terminal{x}} \terminal{-} 1 $
+\end{tabular}
+\end{minipage}
+și fie $s = \{ x \mapsto 3, {\terminal{sum}} \mapsto 0\}$.  Atunci avem următoarea secvență de tranziții:
+\begin{itemize}
+\item[] 
+$\begin{array}{l}\c{C\cdot \Snil, \Snil, s} \xrightarrow{Iter} \c{B\cdot \Swhile \cdot \Snil,  B\cdot C' \cdot \Snil, s} \xrightarrow{BoolOpC}
+\\
+ \c{0 \cdot (\terminal{!} x) \cdot \terminal{<=}\cdot \Swhile \cdot \Snil,  B\cdot C' \cdot \Snil, s} \xrightarrow{IntCt}
+\\ 
+\c{(\terminal{!} x) \cdot \terminal{<=}\cdot \Swhile \cdot \Snil,  0 \cdot B\cdot C' \cdot \Snil, s}  \xrightarrow{Loc}
+\\  
+\c{\terminal{<=}\cdot \Swhile \cdot \Snil,  3\cdot 0 \cdot B\cdot C' \cdot \Snil, s}
+\xrightarrow{BoolOp}
+\\  
+\c{\Swhile \cdot \Snil,  \Strue \cdot B\cdot C' \cdot \Snil, s} 
+ \xrightarrow{IterT}  \c{C' \cdot C \cdot \Snil,  \Snil, s} 
+\end{array}$
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{O execuție (continuare)}{}
+\only<beamer>{
+\begin{minipage}{.35\columnwidth}
+\begin{asciic}
+ while (0 <= !x)  do
+   (sum := !sum + !x ;
+    x := !x - 1)
+\end{asciic}
+\end{minipage}
+\hfill
+\begin{minipage}{.63\columnwidth}
+\begin{tabular}{ll}Fie& $C = {} \Swhile B \Sdo C'$,\\ unde &$B = 0 \terminal{<=} {\terminal{!} {\terminal{x}}}$,\\&$C' = C_1 \terminal{;} C_2$,\\ &$C_1 = {\terminal{sum}} \terminal{:=} {\terminal{!} \terminal{sum}} \terminal{+} {\terminal{!} \terminal{x}}$\\\hfill și & $C_2 =
+{\terminal{x}} \terminal{:=} {\terminal{!} \terminal{x}} \terminal{-} 1 $
+\end{tabular}
+\end{minipage}
+și fie $s = \{ x \mapsto 3, {\terminal{sum}} \mapsto 0\}$.  Atunci avem următoarea secvență de tranziții:
+}
+\begin{itemize}
+\item[] $\begin{array}{l}
+\c{C'\cdot C\cdot \Snil, \Snil, s} 
+\xrightarrow{Secv} \c{C_1 \cdot C_2 \cdot C\cdot \Snil, \Snil, s}  
+\xrightarrow{AtribC} 
+\\
+\c{({\terminal{!} \terminal{sum}} \terminal{+} {\terminal{!} \terminal{x}}) \cdot \terminal{:=} \cdot C_2 \cdot C\cdot \Snil, \terminal{sum}\cdot\Snil, s} 
+\xrightarrow{IntOpC}
+\\ 
+\c{{\terminal{!} \terminal{sum}} \cdot {\terminal{!} \terminal{x}} \cdot \terminal{+} \cdot \terminal{:=} \cdot C_2 \cdot C\cdot \Snil, \terminal{sum}\cdot\Snil, s}
+\xrightarrow{Loc}
+\\
+\c{{\terminal{!} \terminal{x}} \cdot \terminal{+} \cdot \terminal{:=} \cdot C_2 \cdot C\cdot \Snil, 0 \cdot \terminal{sum}\cdot\Snil, s} 
+\xrightarrow{Loc}
+\\
+\c{\terminal{+} \cdot \terminal{:=} \cdot C_2 \cdot C\cdot \Snil, 3 \cdot 0 \cdot \terminal{sum}\cdot\Snil, s} 
+\xrightarrow{IntOp}
+\\
+\c{\terminal{:=} \cdot C_2 \cdot C\cdot \Snil, 3 \cdot \terminal{sum}\cdot\Snil, s} 
+\xrightarrow{IntOp} \c{C_2 \cdot C\cdot \Snil, \Snil, s'},
+\end{array}$
+
+unde  $s' = \{x\mapsto 3, s\mapsto 3\}$
+
+
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]{O execuție (continuare)}{}
+\only<beamer>{
+\begin{minipage}{.35\columnwidth}
+\begin{asciic}
+ while (0 <= !x)  do
+   (sum := !sum + !x ;
+    x := !x - 1)
+\end{asciic}
+\end{minipage}
+\hfill
+\begin{minipage}{.63\columnwidth}
+\begin{tabular}{ll}Fie& $C = {} \Swhile B \Sdo C'$,\\ unde &$B = 0 \terminal{<=} {\terminal{!} {\terminal{x}}}$,\\&$C' = C_1 \terminal{;} C_2$,\\ &$C_1 = {\terminal{sum}} \terminal{:=} {\terminal{!} \terminal{sum}} \terminal{+} {\terminal{!} \terminal{x}}$\\\hfill și & $C_2 =
+{\terminal{x}} \terminal{:=} {\terminal{!} \terminal{x}} \terminal{-} 1 $
+\end{tabular}
+\end{minipage}
+și fie $s' = \{ x \mapsto 3, {\terminal{sum}} \mapsto 3\}$.  Atunci avem următoarea secvență de tranziții:}
+\begin{itemize}
+\item[] $\begin{array}{l}
+\c{C_2\cdot C\cdot \Snil, \Snil, s'}  
+\xrightarrow{AtribC} \c{({\terminal{!} \terminal{x}} \terminal{-} 1) \cdot \terminal{:=} \cdot C\cdot \Snil, \terminal{x}\cdot\Snil, s'} 
+\xrightarrow{IntOpC}
+\\ 
+\c{{\terminal{!} \terminal{x}} \cdot 1 \cdot \terminal{-} \cdot \terminal{:=} \cdot C\cdot \Snil, \terminal{x}\cdot\Snil, s'}
+\xrightarrow{Loc} \c{1 \cdot \terminal{-} \cdot \terminal{:=} \cdot C\cdot \Snil, 3 \cdot \terminal{x}\cdot\Snil, s'} 
+\xrightarrow{Int}
+\\ 
+\c{\terminal{-} \cdot \terminal{:=} \cdot C\cdot \Snil, 1 \cdot 3 \cdot \terminal{x}\cdot\Snil, s'} 
+\xrightarrow{IntOp} \c{\terminal{:=} \cdot C\cdot \Snil, 2 \cdot \terminal{x}\cdot\Snil, s'} 
+\xrightarrow{IntOp}
+\\ 
+\c{C\cdot \Snil, \Snil, \{x\mapsto 2, {\terminal{sum}} \mapsto 3\}} 
+\rightarrow^\ast \c{C\cdot \Snil, \Snil, \{x\mapsto 1, {\terminal{sum}} \mapsto 5\}} 
+\rightarrow^\ast
+\\ 
+\c{C\cdot \Snil, \Snil, \{x\mapsto 0, {\terminal{sum}} \mapsto 6\}} 
+\rightarrow^\ast
+\\  
+\c{\Swhile \cdot \Snil,  \Sfalse \cdot B\cdot C' \cdot \Snil, \{x\mapsto 0, {\terminal{sum}} \mapsto 6\}} 
+ \xrightarrow{IterF}
+\\
+\c{\Snil,  \Snil, \{x\mapsto 0, {\terminal{sum}} \mapsto 6\}} \not\rightarrow
+\end{array}$
+\end{itemize}
+\end{frame}
+\end{subsection}
+
+\begin{frame}{Ce putem/vrem să demonstrăm despre mașina SMC}
+\begin{itemize}
+\vitem Mașina e deterministă?
+\vitem Există execuții infinite?
+\vitem Orice execuție pornind dintr-o stare inițială ajunge (dacă se termină) intr-o stare finală?
+\begin{itemize}
+\item Dacă nu, ce condiții adiționale asupra stărilor inițiale sunt necesare?
+\end{itemize}
+\end{itemize}
+\end{frame}
+\end{section}
+
+\end{document}
+
+
+
