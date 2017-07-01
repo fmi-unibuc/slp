@@ -49,8 +49,8 @@ Adăugați la limbajul IMP constructorii de expresii booleene $\terminal{not} e$
 \begin{parts}
 \part[1] {\bf Semantică intuitivă. } Ce funcție matematică definește următorul program?%
 \begin{asciiml}
-let rec x : int -> bool = 
-  fun (y : int) -> (y <= 0) || (not (y <= 1) && (x (y + -2)))
+let rec x =
+  fun (y) -> (y <= 0) || (not (y <= 1) && (x (y + -2)))
 in x
 \end{asciiml}
 \part[1] {\bf Tipuri. } Scrieți regulile de tipuri pentru $\terminal{not}$, $\terminal{\&\&}$ și $\terminal{||}$.
@@ -61,10 +61,10 @@ in x
 \question[5] {\bf Funcții}
 Se dă expresia $e$
 \begin{asciiml}
-let y = let rec x : int -> bool = 
-          fun (y : int) -> (y <= 0) || (not (y <= 1) && (x (y + -2)))
+let y = let rec x = 
+          fun (y) -> (y <= 0) || (not (y <= 1) && (x (y + -2)))
         in x
-in let x = fun (y : int -> bool) -> y (x y)
+in let x = fun (y) -> y (x y)
    in x y
 \end{asciiml}
 \begin{parts}
@@ -78,7 +78,7 @@ in let x = fun (y : int -> bool) -> y (x y)
 \question[3] {Date structurate (DATA-IMP).}
 Fie $e$ expresia:
 \begin{asciiml}
-(fun (a : {i:int; a:{}} -> {}) ->  a {i=1; a={a=0}}) fun (a:{a:{}}) ->  {a=a.a}
+(fun (a) ->  a {i=1; a={a=0}}) fun (a) ->  {a=a.a}
 \end{asciiml}
 
  Demonstrați că există un tip $T$ astfel încât $\tjud[]{e}{T}$.

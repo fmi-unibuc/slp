@@ -188,71 +188,70 @@ O pereche de valori este o valoare:
 
 \end{section}
 
-\begin{section}{Tipuri Variant / Sumă / Uniune}
-\begin{frame}{Tipuri Variant}
-\begin{block}{Sintaxă}
-\begin{syntaxBlock}{\Exp}
-\vspace{-5ex}
-\alert{
-\begin{itemize}
-\item[]\renewcommand{\syntaxKeyword}{}
-\syntax{\ldots}{}
-\syntaxCont{\SInjL \Exp : \structure{T} \Smid \SInjR \Exp : \structure{T}}{}
-\syntaxCont{\Smatch \Exp \Swith {\SInjL (\structure{x}:\structure{T}) \rightarrow \Exp} \mid {\SInjR (\structure{x}:\structure{T}) \rightarrow \Exp}}{}
-\item[] \syntax[\structure{T}]{\ldots \Smid \structure{T} + \structure{T}}{} 
-\end{itemize}
-}
-\vspace{-2ex}
-\end{syntaxBlock}
-\end{block}
-
-\begin{block}{Reguli pentru tipuri}
-{\small\begin{itemize}
-\item[] $\reg[tInjL]{\tjud{\terminal{InjL} e : T_1 + T_2}{T_1 + T_2}}{\tjud{e}{T_1}{}}{}$
-\item[] $\reg[tInjR]{\tjud{\terminal{InjR} e : T_1 + T_2}{T_1 + T_2}}{\tjud{e}{T_2}{}}{}$
-\item[] 
-$\reg[tMatch]{\tjud{\Smatch e \Swith {\SInjL (x:T_1) \rightarrow e_1} \mid {\SInjR (y:T_2) \rightarrow e_2}}{T}}{\tjud{e}{T_1 + T_2}{}\si \tjud[\Gamma_1]{e_1}{T}{}\si \tjud[\Gamma_2]{e_2}{T}{}}{}$
-
-\hfill {\it dacă} $\Gamma_1 = \Gamma[x \mapsto T_1], \Gamma_2 = \Gamma[y \mapsto T_2]$ 
-
-\end{itemize}
-}
-\end{block}
-\end{frame}
-
-\begin{frame}{Semantica variantelor}
-\begin{block}{Valori variante. \color{black}
-O variantă cu argument valoare este o valoare:}
-\begin{syntaxBlock}{\structure{v}}
-\vspace{-5ex}
-\alert{
-\begin{itemize}
-\item[]\renewcommand{\syntaxKeyword}{}
-\syntax{\ldots \Smid \SInjL \structure{v} : \structure{T} \Smid \SInjR \structure{v} : \structure{T} }{}
-\end{itemize}
-}
-\vspace{-3ex}
-\end{syntaxBlock}
-\end{block}
-\begin{block}{Reguli de reducere}
-{\small
-\begin{itemize}
-\item[] $\reg[InjLS]{\Ss{\c{\SInjL e : T,\sigma}}{\c{\SInjL e' : T,\sigma'}}}{\Ss{\c{e,\sigma}}{\c{e',\sigma'}}}{}$
-\item[] $\reg[InjRS]{\Ss{\c{\SInjR e : T,\sigma}}{\c{\SInjR e' : T,\sigma'}}}{\Ss{\c{e,\sigma}}{\c{e',\sigma'}}}{}$
-
-\item[] $\reg[matchS]{\begin{array}{l}\c{\Smatch e \Swith {\SInjL (x:T_1) \rightarrow e_1} \mid {\SInjR (y:T_2) \rightarrow e_2},\sigma} \rightarrow \\ \c{\Smatch e' \Swith {\SInjL (x:T_1) \rightarrow e_1} \mid {\SInjR (y:T_2) \rightarrow e_2},\sigma'}\end{array}}{\Ss{\c{e,\sigma}}{\c{e',\sigma'}}}{}$
-
-\item[] $\reg[matchL]{\Ss{\c{\Smatch {\SInjL v : T} \begin{array}[t]{@{\;}c@{\;}l@{\;}}\Swith& {\SInjL (x:T_1) \rightarrow e_1}\\  \mid & {\SInjR (y:T_2) \rightarrow e_2}\end{array},\sigma}}{\c{\substapp{e_1}{\subst{\substpair{v}{x}}},\sigma}}}{}{}$
-
-\item[] $\reg[matchR]{\Ss{\c{\Smatch {\SInjR v : T} \begin{array}[t]{@{\;}c@{\;}l@{\;}}\Swith& {\SInjL (x:T_1) \rightarrow e_1}\\  \mid & {\SInjR (y:T_2) \rightarrow e_2}\end{array},\sigma}}{\c{\substapp{e_2}{\subst{\substpair{v}{y}}},\sigma}}}{}{}$
-\end{itemize}
-} 
-\end{block}
-\end{frame}
-
-
-\end{section}
-
+%\begin{section}{Tipuri Variant / Sumă / Uniune}
+%\begin{frame}{Tipuri Variant}
+%\begin{block}{Sintaxă}
+%\begin{syntaxBlock}{\Exp}
+%\vspace{-5ex}
+%\alert{
+%\begin{itemize}
+%\item[]\renewcommand{\syntaxKeyword}{}
+%\syntax{\ldots}{}
+%\syntaxCont{\SInjL \Exp : \structure{T} \Smid \SInjR \Exp : \structure{T}}{}
+%\syntaxCont{\Smatch \Exp \Swith {\SInjL (\structure{x}:\structure{T}) \rightarrow \Exp} \mid {\SInjR (\structure{x}:\structure{T}) \rightarrow \Exp}}{}
+%\item[] \syntax[\structure{T}]{\ldots \Smid \structure{T} + \structure{T}}{} 
+%\end{itemize}
+%}
+%\vspace{-2ex}
+%\end{syntaxBlock}
+%\end{block}
+%
+%\begin{block}{Reguli pentru tipuri}
+%{\small\begin{itemize}
+%\item[] $\reg[tInjL]{\tjud{\terminal{InjL} e : T_1 + T_2}{T_1 + T_2}}{\tjud{e}{T_1}{}}{}$
+%\item[] $\reg[tInjR]{\tjud{\terminal{InjR} e : T_1 + T_2}{T_1 + T_2}}{\tjud{e}{T_2}{}}{}$
+%\item[] 
+%$\reg[tMatch]{\tjud{\Smatch e \Swith {\SInjL (x:T_1) \rightarrow e_1} \mid {\SInjR (y:T_2) \rightarrow e_2}}{T}}{\tjud{e}{T_1 + T_2}{}\si \tjud[\Gamma_1]{e_1}{T}{}\si \tjud[\Gamma_2]{e_2}{T}{}}{}$
+%
+%\hfill {\it dacă} $\Gamma_1 = \Gamma[x \mapsto T_1], \Gamma_2 = \Gamma[y \mapsto T_2]$ 
+%
+%\end{itemize}
+%}
+%\end{block}
+%\end{frame}
+%
+%\begin{frame}{Semantica variantelor}
+%\begin{block}{Valori variante. \color{black}
+%O variantă cu argument valoare este o valoare:}
+%\begin{syntaxBlock}{\structure{v}}
+%\vspace{-5ex}
+%\alert{
+%\begin{itemize}
+%\item[]\renewcommand{\syntaxKeyword}{}
+%\syntax{\ldots \Smid \SInjL \structure{v} : \structure{T} \Smid \SInjR \structure{v} : \structure{T} }{}
+%\end{itemize}
+%}
+%\vspace{-3ex}
+%\end{syntaxBlock}
+%\end{block}
+%\begin{block}{Reguli de reducere}
+%{\small
+%\begin{itemize}
+%\item[] $\reg[InjLS]{\Ss{\c{\SInjL e : T,\sigma}}{\c{\SInjL e' : T,\sigma'}}}{\Ss{\c{e,\sigma}}{\c{e',\sigma'}}}{}$
+%\item[] $\reg[InjRS]{\Ss{\c{\SInjR e : T,\sigma}}{\c{\SInjR e' : T,\sigma'}}}{\Ss{\c{e,\sigma}}{\c{e',\sigma'}}}{}$
+%
+%\item[] $\reg[matchS]{\begin{array}{l}\c{\Smatch e \Swith {\SInjL (x:T_1) \rightarrow e_1} \mid {\SInjR (y:T_2) \rightarrow e_2},\sigma} \rightarrow \\ \c{\Smatch e' \Swith {\SInjL (x:T_1) \rightarrow e_1} \mid {\SInjR (y:T_2) \rightarrow e_2},\sigma'}\end{array}}{\Ss{\c{e,\sigma}}{\c{e',\sigma'}}}{}$
+%
+%\item[] $\reg[matchL]{\Ss{\c{\Smatch {\SInjL v : T} \begin{array}[t]{@{\;}c@{\;}l@{\;}}\Swith& {\SInjL (x:T_1) \rightarrow e_1}\\  \mid & {\SInjR (y:T_2) \rightarrow e_2}\end{array},\sigma}}{\c{\substapp{e_1}{\subst{\substpair{v}{x}}},\sigma}}}{}{}$
+%
+%\item[] $\reg[matchR]{\Ss{\c{\Smatch {\SInjR v : T} \begin{array}[t]{@{\;}c@{\;}l@{\;}}\Swith& {\SInjL (x:T_1) \rightarrow e_1}\\  \mid & {\SInjR (y:T_2) \rightarrow e_2}\end{array},\sigma}}{\c{\substapp{e_2}{\subst{\substpair{v}{y}}},\sigma}}}{}{}$
+%\end{itemize}
+%} 
+%\end{block}
+%\end{frame}
+%
+%
+%\end{section}
 
 \begin{section}{Date indexate (Records)}
 \begin{frame}[fragile]{Date etichetate}{Sintaxă}
@@ -370,7 +369,7 @@ Când toate expresiile sunt evaluate o aleg pe cea cu eticheta cerută.
 \begin{frame}[fragile]{Polimorfism}{Necesitate}
 \begin{block}{Exemplu}
 \begin{asciiml}
-let salariuNou = fun (x:{licentiat:bool;salariu:int}) 
+let salariuNou = fun (x) 
    -> if x.licentiat then x.salariu + 100
                      else x.salariu
 in salariuNou {varsta=22; salariu=2000; vechime=3; licentiat=true }
@@ -382,7 +381,7 @@ in salariuNou {varsta=22; salariu=2000; vechime=3; licentiat=true }
 \item Programul de mai sus este intuitiv corect
 \begin{itemize}\item Deoarece argumentul are câmpurile salariu și licențiat
 \end{itemize}
-\item Dar tipul lui nu corespunde cu tipul cerut de funcție
+\item Dar tipul lui este mai elaborat decât tipul cerut de funcție
 \end{itemize}
 \end{alertblock}
 
@@ -393,11 +392,11 @@ Permitem structuri mai complexe în locul structurilor mai simple.
 
 \begin{frame}[fragile]{Exemplu counter}
 \begin{asciiml}
-let rec addToCounter = fun (counter : {inc: unit -> unit}) -> fun (n:int) ->
+let rec addToCounter = fun (counter) -> fun (n) ->
   if (n<=0) then () else counter.inc();addToCounter counter (n - 1)
 in let counter = let x = ref 0 in {
-  get = fun (u : unit) -> !x ;
-  inc = fun (u : unit) -> x := !x + 1 
+  get = fun (u) -> !x ;
+  inc = fun (u) -> x := !x + 1 
 } 
 in addToCounter counter 3;counter.get()
 \end{asciiml}
@@ -430,8 +429,8 @@ Folosirea aceleiași interfețe (funcție, metodă, operator) asupra unor entit�
 \begin{block}{Exemplu}
 \begin{asciiml}
 let ionel = {varsta=22;salariu=2000;educatie:{licentiat=true;doctorat=false}} in
-let salariu = fun (x:{salariu:int}) -> x.salariu in
-let salariuNou = fun (x:{educatie:{licentiat:bool};salariu:int}) 
+let salariu = fun (x) -> x.salariu in
+let salariuNou = fun (x) 
    -> if x.educatie.licentiat then {salariu= x.salariu + 100; nou=true}
                               else x
 in salariu ionel + salariu (salariuNou ionel)
@@ -500,7 +499,7 @@ $\{x:{\Sint};y:{\Sbool}\} \stip \{x:{\Sint}\}$.
 \end{block}
 \end{frame}
 
-\begin{frame}{Subtipuri}{Produse/Sume}
+\begin{frame}{Subtipuri}%{Produse/Sume}
 \begin{block}{Produse}
 Propagă ordinea pe componente, la fel ca la tipuri etichetate:
 \[
@@ -508,21 +507,21 @@ Propagă ordinea pe componente, la fel ca la tipuri etichetate:
 \]
 \end{block}
 
-\vfill
-\begin{block}{Sume}
-Propagă ordinea pe componente, la fel ca la tipuri etichetate:
-\[
-\reg[sRecordDepth]{T_1 + T_{2} \stip T_1' + T_{2}'}{T_1\stip T_1'\si T_2\stip T_2'}{}
-\]
-\end{block}
+%\vfill
+%\begin{block}{Sume}
+%Propagă ordinea pe componente, la fel ca la tipuri etichetate:
+%\[
+%\reg[sRecordDepth]{T_1 + T_{2} \stip T_1' + T_{2}'}{T_1\stip T_1'\si T_2\stip T_2'}{}
+%\]
+%\end{block}
 \end{frame}
 
 \begin{frame}[fragile]{Subtipuri}{Funcții}
 \begin{block}{Exemplu}
 \begin{asciiml}
-let h = fun (f : {a:int;b:bool} -> {c:int;d:int}) ->
+let h = fun (f) ->
      let r = f {a=5;b=true;o=9} in r.c+r.d
-in let g = fun (x: {b:bool}) -> if x.b then {c=0; d=7; e=12} 
+in let g = fun (x) -> if x.b then {c=0; d=7; e=12} 
                                        else {c=3; d=2; f=true}
 in h g 
 \end{asciiml}
