@@ -1,0 +1,134 @@
+\documentclass[addpoints,12pt,a4paper,answers]{exam}
+%
+\usepackage[none]{hyphenat} \usepackage{fullpage}
+\usepackage{../tdefinition}
+%\usepackage{fancyhdr}
+%\pagestyle{fancy}
+%\lhead{}
+%}
+%\rhead{Page \thepage}
+
+\newcommand{\bs}{\char`\\} \newcommand{\bt}{\char`\`}
+\newcommand{\us}{\char`\_}
+\pagestyle{empty}
+
+
+\newcommand{\getHeight}[1]{%
+%\newdimen\height
+%\setbox0=\vbox{#1}
+%\height=\ht0 \advance\height by \dp0
+%\vspace*{1.1\height}
+%#1%
+}
+
+\newenvironment{solutie}{\par\hspace*{-9em}\begin{minipage}{.98\paperwidth}
+\hrulefill {\bf Rezolvare} \hrulefill}{\hrulefill\end{minipage}}
+
+\begin{document}
+
+\begin{center}
+
+%\makebox[\textwidth]{Prenumele, numele și grupa: \enspace\hrulefill}
+%\vspace{0.1in}
+
+Semantica limbajelor de programare---Examen\footnote{1 punct din oficiu} \hfill  20 septembrie 2017 \\ \ \\
+
+\end{center}
+
+\pointpoints{punct}{puncte}
+
+\begin{questions}
+\question[3] \textbf{Execuții. }
+Să se descrie formal execuția programului IMP
+\begin{asciiml}
+while 4 <= !x do x := !x - !y
+\end{asciiml}
+
+\vspace{-1ex}din starea inițială \(\{x \mapsto 6, y \mapsto 3\}\)
+\begin{parts}
+\part[1] Folosind mașina abstractă SMC
+\part[1] Folosind semantica evaluării.
+\part[1] Folosind semantica tranzițională.
+\end{parts}
+
+\question[1] \textbf{Echivalență de programe. }
+Se consideră instrucțiunea \lstinline$do cmd while cnd$
+cu regulile semantice:
+
+\begin{asciiml}
+(do-true)
+   < cmd, s > => < skip, s1 >
+   < cnd, s1 > => < true, s2 >
+   <do cmd while cnd, s2 > => < skip, s3 >
+   ----------------------------------------
+   < do cmd while cnd, s > => < skip, s3 >
+
+(do-false)
+   < cmd, s > => < skip, s1 >
+   < cnd, s1 > => < false, s2 >
+   ---------------------------------------
+   < do cmd while cnd, s > => < skip, s2 >
+\end{asciiml}
+
+Arătați că, pentru orice instructiune cmd si conditie cnd,
+programele următoare sunt semantic echivalente
+\begin{asciiml}
+do cmd while cnd
+
+cmd ; while cnd do cmd
+\end{asciiml}
+
+\vspace{-1ex}\question[1] \textbf{Operatori de legare. } Subliniați aparițiile libere ale variabilelor / indicați legătura fiecărei apariții legate a unei variabile cu parametrul care o leagă (printr-o săgeată de la variabilă către parametru).
+
+\begin{asciiml}
+  fun (c) -> let e = (let rec e = e + c in e) + e in let t = e + c in t r e c
+\end{asciiml}
+
+\vspace{-1ex}\question[3] \textbf{Siguranța tipurilor. }
+Extindem sintaxa limbajului $\Sfun$-IMP cu:
+\vspace{-1ex}\begin{syntaxBlock}{\nonTerminal{e}}
+\syntax{\Sfor (e ; e ; e)\;e}{}
+\end{syntaxBlock}
+
+\vspace{-4ex}Semantica tranzițională este dată de următoarea regulă:
+
+$\reg[Sfor]{\Ss{\c{\Sfor (e1; e2; e3)\;e,s}}{\c{e1 ; \Swhile e2 \Sdo (e ; e3),s}}}{}{}$
+
+\begin{parts}
+\part[1] Scrieți regula de tipuri corespunzătoare
+\part[\half] Demonstrați proprietatea de progres
+\part[1\half] Demonstrați proprietatea de conservare a tipurilor
+\end{parts}
+
+\question[3\half] \textbf{Inferența tipurilor. }
+Se dă expresia $e$:
+\begin{asciiml}
+let z = fun (z) -> z * z in
+fun (f) -> fun (x) -> fun (y) ->
+   if f x y then f (z x) y else f x (f x y)
+\end{asciiml}
+\begin{parts}
+\vspace{-1ex}\part[\half] Descrieți în cuvinte rezultatul evaluării expresiei $e$
+\part[1] Găsiți un tip $\tau$ astfel încât $\emptyset \vdash e : \tau$
+\part[2] Demonstrați că există un tip $\tau$ astfel încât $\emptyset \vdash e: \tau$
+\end{parts}
+
+
+\question[2] \textbf{Subtipuri. }
+
+Fie $e$ expresia
+\begin{asciiml}
+(fun (a) ->  a {i=1; a={a=true}}) fun (a) ->  {a=a.a}
+\end{asciiml}
+
+\begin{parts}
+\part[\half] Găsiți un tip $\tau$ astfel încât $\emptyset \vdash e : \tau$.
+
+\part[1\half] Demonstrați că există un tip $\tau$ astfel încât $\emptyset \vdash e : \tau$.
+\end{parts}
+
+\end{questions}
+
+
+%Ciornă
+\end{document}
