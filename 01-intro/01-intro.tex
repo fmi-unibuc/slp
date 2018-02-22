@@ -1,355 +1,170 @@
 \documentclass[xcolor=pdftex,romanian,colorlinks]{beamer}
 
 \usepackage{../tslides}
-\usepackage[all]{xy}
 
-\title[SLP---Introducere]{Semantica limbajelor de programare}
-\subtitle{(bazat pe cursul omonim de la Universitatea Cambridge)}
+\title[SLP---Introducere]{Semantica Limbajelor de Programare}
+\subtitle{Introducere}
 \begin{document}
 \begin{frame}
   \titlepage
 \end{frame}
 
 \begin{section}{Motivație}
-\begin{frame}{Ce înseamnă semantica formală?}%
-{Ce definește un limbaj de programare?}
-\begin{description}
-\vitem[Sintaxa] Simboluri de operație, cuvinte cheie, descriere (formală) a programelor/expresiilor bine formate
-\vitem[Practica] Un limbaj e definit de modul cum poate fi folosit
+  \begin{frame}{Ce înseamnă semantica formală?}%
+  {Ce definește un limbaj de programare?}
+  \begin{description}
+  \vitem[Sintaxa] Simboluri de operație, cuvinte cheie, descriere (formală) a programelor/expresiilor bine formate
+  \vitem[Practica] Un limbaj e definit de modul cum poate fi folosit
+  \begin{itemize}
+  \item Manual de utilizare și exemple de bune practici
+  \item Implementare (compilator/interpretor)
+  \item Instrumente ajutătoare (analizor de sintaxă, depanator)
+  \end{itemize}
+  \vitem[Semantica?] Ce înseamnă / care e comportamentul unei instrucțiuni?
+  \begin{itemize}
+  \item De cele mai multe ori se dă din umeri și se spune că \structure{Practica} e suficientă
+  \end{itemize}
+  \end{description}
+  \end{frame}
+
+  \begin{frame}{La ce folosește semantica}
+  \begin{itemize}
+  \item Să înțelegem un limbaj în profunzime
+  \begin{itemize}
+  \item Ca programator: pe ce mă pot baza când programez în limbajul dat
+  \item Ca implementator al limbajului: ce garanții trebuie să ofer
+  \end{itemize}
+  \vitem Ca instrument în proiectarea unui nou limbaj / a unei extensii
+   \begin{itemize}
+  \item Înțelegerea componentelor și a relațiilor dintre ele
+  \item Exprimarea (și motivarea)  deciziilor de proiectare
+  \item Demonstrarea unor proprietăți generice ale limbajului\\
+  E.g., execuția nu se va bloca pentru programe care trec de analiza tipurilor
+  \end{itemize}
+  \vitem Ca bază pentru demonstrarea corectitudinii programelor.
+  \end{itemize}
+  \end{frame}
+\end{section}
+
+\begin{frame}{Organizare și evaluare}
 \begin{itemize}
-\item Manual de utilizare și exemple de bune practici
-\item Implementare (compilator/interpretor)
-\item Instrumente ajutătoare (analizor de sintaxă, depanator)
-\end{itemize}  
-\vitem[Semantica?] Ce înseamnă / care e comportamentul unei instrucțiuni?
-\begin{itemize}
-\item De cele mai multe ori se dă din umeri și se spune că \structure{Practica} e suficientă 
+\vitem Structura cursului: 2C + 1L
+\vitem Evaluare: Nota finala = 1 + Examen + Teme
+\vfill
+\structure{Observații:}
+\begin{enumerate}
+\item Promovare: nota finala >=5
+
+\item Examenul poate fi înlocuit de un proiect
+\end{enumerate}
 \end{itemize}
-\end{description}
 \end{frame}
 
-\begin{frame}{La ce folosește semantica}
+\begin{section}{Evaluare}
+\begin{frame}{Teme de laborator}
 \begin{itemize}
-\item Să înțelegem un limbaj în profunzime
-\begin{itemize}
-\item Ca programator: pe ce mă pot baza când programez în limbajul dat
-\item Ca implementator al limbajului: ce garanții trebuie să ofer
-\end{itemize}
-\vitem Ca instrument în proiectarea unui nou limbaj / a unei extensii
- \begin{itemize}
-\item Înțelegerea componentelor și a relațiilor dintre ele
-\item Exprimarea (și motivarea)  deciziilor de proiectare
-\item Demonstrarea unor proprietăți generice ale limbajului\\
-E.g., execuția nu se va bloca pentru programe care trec de analiza tipurilor
-\end{itemize}
-\vitem Ca bază pentru demonstrarea corectitudinii programelor.
+\vitem Noțiunile discutate la curs vor fi însoțite de formalizări pe calculator care vor trebui modificate / extinse / regândite ca parte din temă.
+\vitem \alert{Nu subestimați timpul de lucru}. Teme odată la 2 săptămâni, o temă poate conține mai multe probleme.
+\vitem De la lansarea temei (pe Moodle), veți avea cam 2 săptămâni pentru a rezolva problemele.
+\vitem Soluțiile vor fi trimise pe Moodle și, dacă e cazul, prezentate la laborator.
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Caracteristici care \underline{nu} sunt principale pentru cursul acesta}
-\begin{block}{În acest curs \alert{nu} vom insista pe:}
+\begin{frame}{Examenul scris}
 \begin{itemize}
-\item Proiectarea și implementarea limbajelor de programare
-\item Trăsături avansate ale limbajelor de programare
-\item \ldots
+\item Va consta din probleme
+\vitem Scopul lui e să verifice fixarea cunoștințelor predate
+\vitem Cu acces (limitat) la materiale tipărite
+\vitem E de așteptat ca nota de la examen să fie în concordanță cu cea de la laborator
+\begin{itemize}
+\item În caz contrar se vor reevalua amândouă, trebuind să dovediți oral că munca vă aparține
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Proiect---Opțional}{Doar pentru cei cu interes deosebit în limbaje de programare}
+\begin{itemize}
+\item Definirea nucleului unui limbaj (nou) de programare; sau
+\vitem Extinderea unei definiții existente într-un mod interesant și netrivial
+\vitem Stabilirea temei: de comun acord, \structure{înainte de jumătatea semestrului}
+\vitem \structure{Termen de predare:} înainte de examenul final
+\vitem Posibilitate de transformare în proiect pentru lucrarea de dizertație
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Colaborare}
+
+\begin{block}{Activități încurajate}
+\begin{itemize}
+\item Discuții despre probleme și modalități generale de a le aborda
+\item Folosirea forumului pentru a cere clarificări pentru folosul tuturor
 \end{itemize}
 \end{block}
 
-\begin{block}{De ce?}
+\vfill\begin{alertblock}{Activități intolerate}
 \begin{itemize}
-\item Pentru ca ne lipsesc elementele/metodele de bază
-\item Acest curs stabilește cadrul pentru dezvoltări ulterioare
+\item Scrierea împreună a codului
+\item Copierea soluțiilor de la alți colegi
+\item Consecințe:
+\begin{enumerate}
+\item Anularea temei / examenului (la prima abatere)
+\item Nota 1 la curs și referat în vederea exmatriculării!
+\end{enumerate}
 \end{itemize}
-\end{block}
-
-\begin{block}{Când?}
-\begin{itemize}
-\item (Potențial) alte cursuri la master
-\item La doctorat 
-\end{itemize}
-\end{block}
+\end{alertblock}
 \end{frame}
-
-\begin{frame}[fragile]{C}
-\onslide<2>
-\begin{block}{}
-\begin{verbatim}
-  int main(void) {
-    int x = 3;
-    return x+++x+++x+++x++;
-  }
-\end{verbatim}
-\end{block}
-\end{frame}
-
-\begin{frame}[fragile]{C}
-
-\begin{block}{}
-\begin{verbatim}
-  int main(void) {
-    int x = 0;
-    return (x = 1) + (x = 2);
-  }
-\end{verbatim}
-\end{block}
-\onslide<2>
-Conform standardului C, comportamentul programului este \structure{nedefinit}.
-\begin{itemize}
-\item GCC4, MSVC: valoarea întoarsă e \alert{4}
-\item GCC3, ICC, Clang: valoarea întoarsă e \alert{3}
-\end{itemize}
-\end{frame}
-
-\begin{frame}[fragile]{C}
-
-\begin{block}{}
-\begin{verbatim}
-  int r; 
-  int f(int x) {
-    return (r = x);
-  }
-  int main() {
-    return f(1) + f(2), r;
-  }
-\end{verbatim}
-\end{block}
-
-\onslide<2> Conform standardului C, comportamentul programului este \structure{subspecificat}:\\
-poate întoarce atât valoarea \alert{1} cât și \alert{2}.
-\end{frame}
-
-\begin{frame}[fragile]{C\#}
-\onslide<2>
-\begin{verbatim}
-delegate int IntThunk();
-class M {
-    public static void Main() {
-        IntThunk[] funcs = new IntThunk[11];
-        for (int i = 0; i <= 10; i++) {
-            funcs[i] = delegate() { return i; };
-        }
-        foreach (IntThunk f in funcs) {
-            System.Console.WriteLine(f());
-        }
-    }
-}
-\end{verbatim}
-\end{frame}
-
-
-\begin{frame}[fragile]{C++}
-\onslide<2>
-\begin{verbatim}
-#include <iostream>
-#include <array>
-#include <functional>
-using namespace std;
-
-int main() {
-    array<function<int()>,11> funcs;
-    for (auto i = 0; i < 11; i++) {
-    	funcs[i] = [&]() {return i;};
-    }
-    for (auto f : funcs) {
-    	cout << f() << endl;
-    }
-}
-\end{verbatim}
-\end{frame}
-
-\begin{frame}[fragile]{JavaScript}
-\onslide<2>
-\begin{verbatim}
-function bar(x) { 
-  return function() { var x = 5; return x; }; 
-}
-var f = bar(200);
-f()
-\end{verbatim}
-\end{frame}
-
-\begin{frame}[fragile]{JavaScript}
-\begin{verbatim}
-function bar(x) { 
-  return function() { var x = x; return x; }; 
-}
-var f = bar(200);
-f()
-\end{verbatim}
-\end{frame}
-
-\begin{frame}[fragile]{Java}
-\onslide<2>
-\small{\begin{verbatim}
-class Main {
-    interface F<A, B> {          B a(A x);         }
-    static <A, B, C> F<A, C> c(final F<A, B> f, final F<B, C> g) {
-        return new F<A, C>() { 
-            public C a(A x) {  return g.a(f.a(x)); }
-        };
-    }
-    public static void main(String[] args) {
-        final Integer a = 2, b = 1;
-        F<Integer, Integer> f = new F<Integer, Integer>() { 
-            public Integer a(Integer x) { return x + b; } };
-        F<Integer, Integer> g = new F<Integer, Integer>() { 
-            public Integer a(Integer x) { return a * x; } };
-        F<Integer, Integer> h = c( f, g );
-        System.out.println(h.a(5));
-    }
-}
-\end{verbatim}}
-\end{frame}
-
-\begin{frame}{De ce semantică formală?}
-\begin{itemize}
-\vitem Avantaje la implementare
-\begin{itemize}
-\item Oferă o descriere a comportamentului independent de implementare
-\item Oferă o modalitate de a justifica corectitudinea  optimizărilor.
-\end{itemize} 
-\vitem Verificarea programelor
-\begin{itemize}
-\item Oferă o bază pentru specificarea și verificarea corectitudinii programelor.
-\end{itemize}
-\vitem Validarea proiectării limbajelor
-\begin{itemize}
-\item O definiție formală poate releva potențiale interacțiuni nedorite între elementele limbajului.
-\item Formalizarea poate duce la o restructurare mai riguroasă a limbajului
-\end{itemize}
-\end{itemize}
-\end{frame}
-
-\begin{frame}{Privire de ansamblu}{}
-\xymatrix@C=1em@R=5em{
-\mbox{Limbaje formale} \ar[dr]& \mbox{Logică}\ar[d] & \mbox{C/Java/\ldots}\ar[dl] & \mbox{Calculabilitate}\ar[dll]\\
-&\mbox{\large \color{blue}Semantica}\ar[dl]\ar[d]\ar[dr]\ar[drr] \\
-\mbox{Compilare} & \mbox{Verificare} & \mbox{Concurență} & \mbox{Semantica denotațională} 
-}
-\end{frame}
-
-
-
-\begin{frame}{Tipuri de semantică}
-\begin{itemize}
-\vitem Operațională
-\begin{itemize}
-\item Descrie execuția programului
-\item Asociază reguli de deducție elementelor de limbaj
-\item Pașii de execuție devin pași de demonstrație
-\end{itemize}
-\vitem Denotațională
-\begin{itemize}
-\item Asociază elementelor de limbaj obiecte matematice abstracte bine specificate dintr-un univers matematic (domeniu) ales în mod convenabil
-\end{itemize}
-\vitem  Axiomatică
-\begin{itemize}
-\item Asociază elementelor de limbaj contracte între proprietățile mediului înaintea execuției și cele de după execuție
-\end{itemize}
-\end{itemize}
-\end{frame}
-
 \end{section}
 
 \begin{section}{Descriere curs}
-\begin{frame}{Structură cursuri}{}
+\begin{frame}{Listă de subiecte}{În funcție de timp/interes}
 \begin{itemize}
-\vitem<1-> Semantică operațională 
-\only<1>{%
+\item Paradigme standard de semantică operațională
 \begin{itemize}
-\item Mașini abstracte
-\item Semantica evaluării
-\item Semantică tranzițională
-\end{itemize}%
-}
-\vitem<2-> Tehnici de demonstrație
-\only<2>{%
+\item Semantica evaluării (big-step)
+\item Semantica tranzițională (small-step)
+\end{itemize}
+\vitem Platforma \K de definire a limbajelor de programare
+\vitem Tipuri de limbaje de programare
 \begin{itemize}
-\item Inducție structurală
-\item Reguli de deducție
-\item Definiții inductive
-\item Inducție deductivă
-\end{itemize}%
-}
-\vitem<3-> Echivalență semantică
-\vitem<4-> Elemente de programare funcțională 
-\only<4>{%
+\item Funcționale, Imperative, Orientate obiect, Logice
+\end{itemize}
+\vitem Tipuri de trăsături de limbaj
 \begin{itemize}
-\item Evaluare prin substituție
-\item Apel prin valoare/apel prin nume
-\item Sisteme de tipuri
-\item Recursie locală
-\end{itemize}%
-}
-\vitem<5-6> Programe interactive
-\only<5>{%
-\begin{itemize}
-\item Intrare/Ieșire
-\item Bisimilaritate ca echivalență de programe interactive
-\item Procese și comunicare
-\end{itemize}%
-}
+\item excepții, concurență, comunicare, sincronizare
+\end{itemize}
 \end{itemize}
 \end{frame}
 
 \begin{frame}{Obiective}
 \begin{itemize}
-\vitem Formalizarea și înțelegerea unor concepte de bază din semantica (operațională a) limbajelor de programare
-\vitem Deprinderea abilității de a formaliza
-\begin{itemize}
-\item Definiția unui limbaj de programare
-\item Proprietăți ale limbajului și/sau ale programelor
-\item Argumente privind validitatea programelor 
-\item Argumente privind consistența și adecvarea definițiilor
+\item Formalizarea și înțelegerea conceptelor de bază în proiectarea limbajelor de programare
+\vitem Specificarea și definirea (într-un mod declarativ) a limbajelor
+\begin{itemize} \item nu implementarea lor
 \end{itemize}
-\vitem Deprinderea abilitățiii de a înțelege articole de cercetare legate de semantica limbajelor de programare
+\vitem Deprinderea facilității de a defini limbaje folosind \K
+\begin{description}
+\item[Avantaje] Modular, dinamic, elegant, minim de dependență între diferitele caracteristici ale limbajelor
+\item[Bonus] interpretor și cadru de analiză a execuțiilor
+\end{description}
 \end{itemize}
 \end{frame}
 
 \begin{frame}{Resurse}
 \begin{itemize}
-\item Pagina Moodle a cursului \url{http://moodle.fmi.unibuc.ro/course/view.php?id=522} 
+\item Pagina Moodle a cursului
+ \url{http://moodle.fmi.unibuc.ro/course/view.php?id=522}
 \begin{itemize}
-\item Prezentările cursurilor, forum
-\item Resurse accesibile pe pagina Moodle
-\begin{itemize}
-\item Cartea lui Winskel --- The Formal Semantics of Programming Languages
-\item Notele de curs ale lui Andrew Pitts --- Lecture Notes on Semantics of Programming Languages
+\item Prezentările cursurilor, forum, teme
 \end{itemize}
+\vitem \url{http://k-framework.org}
+\begin{itemize}
+\item Tutoriale, example, interfață web pentru editare/modificare/execuție de definiții și programe
 \end{itemize}
 \end{itemize}
 \end{frame}
 \end{section}
 
 
-\begin{section}{Evaluare}
-\begin{frame}{Evaluare}
-\begin{itemize}
-\item Examen scris
-\begin{itemize}
-\item Va consta din probleme
-\item Scopul lui e să verifice fixarea cunoștințelor predate
-\item Cu acces (limitat) la materiale 
-\end{itemize}
-\vitem Probleme date la curs / seminar
-\begin{itemize}
-\item Contează ca puncte la examen
-\item Cam la 2 saptămâni o temă valorând 1-2 puncte
-\item Temele trebuie predate la seminar în termen de 2 săptămâni
-\end{itemize}
-\end{itemize}
-\end{frame}
-
-\begin{frame}{Colaborare la teme}
-\begin{itemize}
-\item Sunteți încurajați să discutați modalitațile de a rezolva o problemă
-\item Este mai puțin încurajată folosirea codului scris de altcineva / scrierea împreună a codului
-\item În caz că folosiți cod care nu l-ați conceput, marcați acest lucru clar în sursă
-\item Vom folosi soft anti-plagiat pentru a verifica tentative de plagiere.
-\end{itemize}
-\end{frame}
-
-\end{section}
 
 \end{document}
 

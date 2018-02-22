@@ -21,14 +21,14 @@
 
 
 %\usepackage{helvet}
-%\usepackage{courier} 
+%\usepackage{courier}
 %\usepackage{textcomp}	 % additional symbols (Text Companion font extension)
 \usepackage{txfonts}
 %\usepackage{stmaryrd}
 %\usepackage{mathrsfs}
 \usepackage{ulem}
 \usepackage[final]{pdfpages}
-\usepackage{etex} 
+\usepackage{etex}
 %\usetikzlibrary{shapes,snakes}
 \usepackage{ifdraft}
 
@@ -57,7 +57,7 @@
 \newcommand{\graph}[1]{
 
 \begin{tikzpicture}
-\pgfsetarrowsstart{latex} 
+\pgfsetarrowsstart{latex}
   \GraphInit[vstyle=Normal]
  \SetUpEdge[lw         = .5pt,
             style={-latex'},
@@ -289,15 +289,15 @@
 }{}
 \lstdefinelanguage{maude}{
 		upquote=true,
-       morekeywords={fmod, mod, omod, endm, endfm, op, ops, rl, crl, eq, ceq, sorts, subsorts, var, strat, frozen, assoc comm, id:, 
+       morekeywords={fmod, mod, omod, endm, endfm, op, ops, rl, crl, eq, ceq, sorts, subsorts, var, strat, frozen, assoc comm, id:,
 	   search, rewrite, reduce, red, rew, prec, gather, if, metadata, including, protecting, is},
         emph={[3]Map, Set, List, Int, Bool, String, Id},
        emphstyle={[3]\textit},
        literate=
-       {=>}{$\;=\!>$}5 
-       {->}{{${-}{>}$}}3 
-       {~>}{{$\sim\!\!>$}}3  
-       {|->}{$\;|-\!\!>$}5 
+       {=>}{$\;=\!>$}5
+       {->}{{${-}{>}$}}3
+       {~>}{{$\sim\!\!>$}}3
+       {|->}{$\;|-\!\!>$}5
 }
 
 \newcommand{\si}{\hspace{1em}}
@@ -323,7 +323,7 @@
 \graph{%
   \Vertex[L={\;#1\;}]{R}%
   \SOWE[unit=0.75,L={\;#2\;}](R){S1}%
-  \SOEA[unit=0.75,L={\;#4\;}](R){S3}% 
+  \SOEA[unit=0.75,L={\;#4\;}](R){S3}%
   \SO[unit=0.75,L={\;#3\;}](R){S2} %
   \ifthenelse{\equal{#2}{}}{}{\Edge(R)(S1)}%
   \ifthenelse{\equal{#3}{}}{}{\Edge(R)(S2)}%
