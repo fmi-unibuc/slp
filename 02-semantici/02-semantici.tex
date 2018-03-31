@@ -198,8 +198,8 @@ denotStmt (If c t e) s
 denotStmt (While c b) =
   fix (\w s ->
     if denotBExp b s
-      then s
-      else w (denotStmt c s))
+      then w (denotStmt c s)
+      else s)
 \end{asciihs}
 \end{minipage}
 \end{frame}
@@ -271,9 +271,9 @@ definește recursiv relația ternară descrisă mai sus.
 
     \begin{block}{Exemple}
     \[\begin{array}{lll@{\;:\;}ll}
-    &\vdash& \Sif {\Strue} \Sthen {} \Selse {} & \terminal{stmt}
+    &\vdash& \Sif {\Strue} \Sthen \{\} \Selse \{\} & \terminal{stmt}
     \\\\
-    x:\Sint&\vdash&x = x + 1 3& \Sint
+    x:\Sint&\vdash& x + 13 & \Sint
     \\\\
     x:\Sint&\not\vdash&x = y +1 &T&\mbox{pentru orice } T
     \end{array}\]
@@ -309,7 +309,7 @@ definește recursiv relația ternară descrisă mai sus.
     \vitem[] $\reg[op+]{\tjud{e_1 + e_2}{\Sint}}{\tjud{e_1}{\Sint} \si \tjud{e_2}{\Sint}}{}$
     \vitem[] $\reg[bool]{\tjud{b}{\Sbool}}{}{b\in \{\Strue,\Sfalse\}}$
     \vitem[] $\reg[op$\leq$]{\tjud{e_1 \terminal{<=} e_2}{\Sbool}}{\tjud{e_1}{\Sint} \si \tjud{e_2}{\Sint}}{}$
-    \item[] $\reg[atrib]{\tjud{x\terminal{=}e}{\terminal{stmt}}}{\tjud{e}{\Sint}}{\Gamma(l) = \Sint}$
+    \item[] $\reg[atrib]{\tjud{x\terminal{=}e}{\terminal{stmt}}}{\tjud{e}{\Sint}}{\Gamma(x) = \Sint}$
     \vitem[] $\reg[secv]{\tjud{c_1\terminal{;} c_2}{\terminal{stmt}}}{\tjud{c_1}{\terminal{stmt}}\si \tjud{c_2}{\terminal{stmt}}}{}$
     \vitem[] $\reg[if]{\tjud{\Sif c \Sthen t \Selse e}{\terminal{stmt}}}{\tjud{c}{\Sbool} \si \tjud{t}{{\terminal{stmt}}} \si \tjud{e}{\terminal{stmt}}}{}$
     \vitem[] $\reg[while]{\tjud{\Swhile (c)\,b}{\terminal{stmt}}}{\tjud{c}{\Sbool} \si \tjud{b}{{\terminal{stmt}}}}{}$
